@@ -1934,20 +1934,34 @@
       }
       
       .dashboard-container {
-        flex-direction: column-reverse;
-        gap: 30px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
         height: auto;
         overflow: visible;
       }
 
       .countdown-center {
         width: 100%;
+        order: 2;
+        display: grid;
+        gap: 12px;
+        z-index: 3;
+      }
+
+      .glass-card {
+        width: 100%;
+        padding: 14px;
       }
 
       .orbit-container {
+        order: 1;
         width: 100%;
         height: auto;
-        padding: 40px 0;
+        min-height: 320px;
+        padding: 8px 0 4px;
+        margin-top: 0;
+        z-index: 4;
       }
     }
 
@@ -1989,8 +2003,8 @@
         display: block;
         width: 100%;
         height: auto;
-        padding: 12px 6px;
-        margin-top: 18px;
+        padding: 0 0 8px;
+        margin-top: 0;
       }
       .planet-wrapper {
         position: relative;
@@ -2020,10 +2034,10 @@
         justify-content: flex-start;
       }
       .planet-wrapper:first-child {
-        margin-left: 8px;
+        margin-left: 4px;
       }
       .planet-wrapper:last-child {
-        margin-right: 8px;
+        margin-right: 4px;
       }
       .planet-label {
         font-size: 0.95rem;
