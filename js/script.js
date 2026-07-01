@@ -462,6 +462,41 @@
     const btnEnter = document.getElementById('btn-enter-universe');
     const appInterface = document.getElementById('app-interface');
 
+    function initMobileOrbitSwipe() {
+      if (window.innerWidth > 768) return;
+
+      const orbitRing = document.getElementById('orbit-ring');
+      const orbitContainer = document.querySelector('.orbit-container');
+      if (!orbitRing || !orbitContainer) return;
+
+      let startX = 0;
+      let startScrollLeft = 0;
+      let isDragging = false;
+
+      orbitRing.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startScrollLeft = orbitRing.scrollLeft;
+        isDragging = true;
+      }, { passive: true });
+
+      orbitRing.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.touches[0].clientX - startX;
+        orbitRing.scrollLeft = startScrollLeft - deltaX;
+      }, { passive: true });
+
+      orbitRing.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+
+      orbitRing.addEventListener('touchcancel', () => {
+        isDragging = false;
+      });
+    }
+
+    initMobileOrbitSwipe();
+    window.addEventListener('resize', initMobileOrbitSwipe);
+
     btnEnter.addEventListener('click', () => {
       synth.start();
       updateAudioIcon(true);
