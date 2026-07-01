@@ -1118,15 +1118,7 @@
     const letterCloseBtn = document.getElementById('letter-close-btn');
     const dailyLetterMessage = document.getElementById('daily-letter-message');
 
-    const dailyMessages = [
-      'Thank you for making ordinary days feel so extraordinary. Knowing you has made this universe feel so much brighter, and I look forward to checking my phone every single day just to see your name.',
-      'Today feels a little softer because I get to think about you. I hope your heart feels as loved as you make mine feel.',
-      'No matter how busy life gets, you are still the calmest, brightest part of my world. I am so lucky to love you.',
-      'I hope you know how much joy you bring into my life, even in the smallest moments. You make everything feel more beautiful.',
-      'You make my days feel lighter, warmer, and more meaningful. I am grateful for every little moment with you.',
-      'I keep falling for you in the quiet ways — your smile, your voice, your kindness — and I hope you feel how deeply loved you are today.',
-      'Today I just want you to know that you are cherished, adored, and always on my mind. I love you more than words can say.'
-    ];
+    let dailyMessages = [];
 
     // Use a shuffled order stored in localStorage so messages do not repeat
     // until the full cycle of messages has been shown. This is local to the
@@ -1139,31 +1131,52 @@
       return arr;
     }
 
-    if (dailyLetterMessage) {
+    async function loadDailyMessages() {
       try {
-        const storageKey = 'our_universe_daily_order_v1';
-        const startKey = 'our_universe_daily_start_v1';
-        let order = JSON.parse(localStorage.getItem(storageKey) || 'null');
-
-        // If stored order is missing or length changed, create a new shuffled order
-        if (!Array.isArray(order) || order.length !== dailyMessages.length) {
-          order = Array.from({ length: dailyMessages.length }, (_, i) => i);
-          shuffleArray(order);
-          localStorage.setItem(storageKey, JSON.stringify(order));
-          // Anchor the cycle to today's day count so dayIndex maps consistently
-          localStorage.setItem(startKey, String(Math.floor(Date.now() / (1000 * 60 * 60 * 24))));
+        const response = await fetch('assets/love-messages.json');
+        if (!response.ok) throw new Error('Failed to fetch love messages');
+        const data = await response.json();
+        if (Array.isArray(data) && data.length) {
+          dailyMessages = data.filter(Boolean);
         }
-
-        const startDay = parseInt(localStorage.getItem(startKey) || '0', 10);
-        const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) - startDay;
-        const pick = order[((dayIndex % order.length) + order.length) % order.length];
-        dailyLetterMessage.textContent = dailyMessages[pick];
       } catch (err) {
-        // Fallback to deterministic daily rotation if storage fails
-        const daySeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-        dailyLetterMessage.textContent = dailyMessages[daySeed % dailyMessages.length];
+        dailyMessages = [];
+      }
+
+      if (!dailyMessages.length) {
+        dailyMessages = [
+          'Thank you for making ordinary days feel so extraordinary. Knowing you has made this universe feel so much brighter, and I look forward to checking my phone every single day just to see your name.',
+          'Today feels a little softer because I get to think about you. I hope your heart feels as loved as you make mine feel.',
+          'No matter how busy life gets, you are still the calmest, brightest part of my world. I am so lucky to love you.'
+        ];
+      }
+
+      if (dailyLetterMessage) {
+        try {
+          const storageKey = 'our_universe_daily_order_v1';
+          const startKey = 'our_universe_daily_start_v1';
+          let order = JSON.parse(localStorage.getItem(storageKey) || 'null');
+
+          // If stored order is missing or length changed, create a new shuffled order
+          if (!Array.isArray(order) || order.length !== dailyMessages.length) {
+            order = Array.from({ length: dailyMessages.length }, (_, i) => i);
+            shuffleArray(order);
+            localStorage.setItem(storageKey, JSON.stringify(order));
+            localStorage.setItem(startKey, String(Math.floor(Date.now() / (1000 * 60 * 60 * 24))));
+          }
+
+          const startDay = parseInt(localStorage.getItem(startKey) || '0', 10);
+          const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) - startDay;
+          const pick = order[((dayIndex % order.length) + order.length) % order.length];
+          dailyLetterMessage.textContent = dailyMessages[pick];
+        } catch (err) {
+          const daySeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+          dailyLetterMessage.textContent = dailyMessages[daySeed % dailyMessages.length];
+        }
       }
     }
+
+    loadDailyMessages();
 
     let polarisClicks = 0;
 
