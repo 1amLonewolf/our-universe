@@ -1128,9 +1128,41 @@
       'Today I just want you to know that you are cherished, adored, and always on my mind. I love you more than words can say.'
     ];
 
+    // Use a shuffled order stored in localStorage so messages do not repeat
+    // until the full cycle of messages has been shown. This is local to the
+    // user's browser; for cross-device consistency use a server-sourced list.
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     if (dailyLetterMessage) {
-      const daySeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-      dailyLetterMessage.textContent = dailyMessages[daySeed % dailyMessages.length];
+      try {
+        const storageKey = 'our_universe_daily_order_v1';
+        const startKey = 'our_universe_daily_start_v1';
+        let order = JSON.parse(localStorage.getItem(storageKey) || 'null');
+
+        // If stored order is missing or length changed, create a new shuffled order
+        if (!Array.isArray(order) || order.length !== dailyMessages.length) {
+          order = Array.from({ length: dailyMessages.length }, (_, i) => i);
+          shuffleArray(order);
+          localStorage.setItem(storageKey, JSON.stringify(order));
+          // Anchor the cycle to today's day count so dayIndex maps consistently
+          localStorage.setItem(startKey, String(Math.floor(Date.now() / (1000 * 60 * 60 * 24))));
+        }
+
+        const startDay = parseInt(localStorage.getItem(startKey) || '0', 10);
+        const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) - startDay;
+        const pick = order[((dayIndex % order.length) + order.length) % order.length];
+        dailyLetterMessage.textContent = dailyMessages[pick];
+      } catch (err) {
+        // Fallback to deterministic daily rotation if storage fails
+        const daySeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+        dailyLetterMessage.textContent = dailyMessages[daySeed % dailyMessages.length];
+      }
     }
 
     let polarisClicks = 0;
