@@ -2863,7 +2863,7 @@
       <div class="letter-body">
         <p>Dear Beatrice,</p>
         <p>Thank you for making ordinary days feel so extraordinary. Knowing you has made this universe feel so much brighter, and I look forward to checking my phone every single day just to see your name.</p>
-        <p>Yesterday was one of my favorite memories, and I'm so excited for this weekend and all the adventures we have ahead of us.</p>
+        <p>Last Weekend was one of my favorite memories, and I'm so excited for this weekend and all the adventures we have ahead of us.</p>
         <p>Of all the stars in this universe, you're still my favorite discovery.</p>
         <p class="signature">With love,<br>Marsden ❤️</p>
       </div>
@@ -4008,6 +4008,115 @@
         closeLetter();
       }
     });
+
+    // ----------------------------------------------------
+    // Interactive Orbit: Touch / Mouse Drag Rotation
+    // ----------------------------------------------------
+    (function(){
+      const orbitRing = document.getElementById('orbit-ring');
+      const orbitContainer = document.querySelector('.orbit-container');
+      if (!orbitRing || !orbitContainer) return;
+
+      // Inject lightweight CSS for interactive orbit mode
+      document.head.insertAdjacentHTML('beforeend', `
+        <style>
+          .interactive-orbit .orbit-ring { display: block !important; animation: none !important; touch-action: none; }
+          .interactive-orbit .sun { display: block !important; }
+          .interactive-orbit .orbit-container { overflow: visible !important; height: 420px; display:flex !important; justify-content:center; align-items:center; }
+          .interactive-orbit .planet-wrapper { position: absolute !important; left: 50% !important; top: 50% !important; }
+          @media (max-width: 768px) {
+            .interactive-orbit .orbit-ring { width: 320px !important; height: 320px !important; }
+          }
+        </style>
+      `);
+
+      let angle = 0;
+      let isDown = false;
+      let startX = 0;
+      let lastX = 0;
+      let lastTime = 0;
+      let velocity = 0;
+      let rafId = null;
+
+      function setRotation(a) {
+        angle = a;
+        orbitRing.style.transform = `rotate(${angle}deg)`;
+      }
+
+      function onPointerDown(e) {
+        isDown = true;
+        const x = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+        startX = x;
+        lastX = x;
+        lastTime = performance.now();
+        velocity = 0;
+        if (e.target && e.target.setPointerCapture) {
+          try { e.target.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+      }
+
+      function onPointerMove(e) {
+        if (!isDown) return;
+        const x = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+        const now = performance.now();
+        const dx = x - lastX;
+        const dt = Math.max(1, now - lastTime);
+        const deltaAngle = dx * 0.4; // sensitivity
+        setRotation(angle + deltaAngle);
+        velocity = dx / dt;
+        lastX = x;
+        lastTime = now;
+      }
+
+      function onPointerUp(e) {
+        if (!isDown) return;
+        isDown = false;
+        // If this was a quick tap (no movement) treat as click
+        const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : e.clientX;
+        if (Math.abs(endX - startX) < 6) {
+          const target = document.elementFromPoint(e.clientX || endX, e.clientY || (e.changedTouches && e.changedTouches[0] && e.changedTouches[0].clientY));
+          const planet = target && target.closest ? target.closest('.planet') : null;
+          if (planet) planet.click();
+        }
+
+        // inertia
+        cancelAnimationFrame(rafId);
+        function decay() {
+          velocity *= 0.95;
+          if (Math.abs(velocity) < 0.0005) return;
+          setRotation(angle + velocity * 16);
+          rafId = requestAnimationFrame(decay);
+        }
+        rafId = requestAnimationFrame(decay);
+      }
+
+      // Pointer / touch event binding
+      orbitRing.addEventListener('touchstart', onPointerDown, {passive: true});
+      orbitRing.addEventListener('touchmove', onPointerMove, {passive: true});
+      orbitRing.addEventListener('touchend', onPointerUp);
+      orbitRing.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+
+      // Enable interactive orbit when app is active on small screens
+      const appNode = document.getElementById('app-interface');
+      const enableIfNeeded = () => {
+        if (window.innerWidth <= 768 && appNode.classList.contains('active')) {
+          document.body.classList.add('interactive-orbit');
+          orbitRing.style.animation = 'none';
+        } else {
+          document.body.classList.remove('interactive-orbit');
+          orbitRing.style.animation = '';
+        }
+      };
+
+      // Observe app activation and window resizes
+      const mo = new MutationObserver(enableIfNeeded);
+      mo.observe(appNode, { attributes: true, attributeFilter: ['class'] });
+      window.addEventListener('resize', enableIfNeeded);
+      // initial check
+      enableIfNeeded();
+    })();
   </script>
 </body>
 </html>
