@@ -1,0 +1,3840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Our Universe - A personalized love story for Marsden and Beatrice">
+  <title>Our Universe | Marsden & Beatrice</title>
+  <style>
+    /* ----------------------------------------------------
+       Design System & Variables
+       ---------------------------------------------------- */
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@500;700;900&family=Sacramento&display=swap');
+
+    :root {
+      --bg-dark: #06060f;
+      --bg-space: radial-gradient(circle at center, #100d28 0%, #06060f 80%);
+      --card-bg: rgba(13, 11, 30, 0.8);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --glow-pink: rgba(255, 64, 129, 0.5);
+      --glow-cyan: rgba(0, 229, 255, 0.5);
+      --glow-gold: rgba(255, 215, 0, 0.5);
+      
+      --color-pink: #ff4081;
+      --color-cyan: #00e5ff;
+      --color-gold: #ffd700;
+      --color-purple: #aa00ff;
+      --color-green: #00e676;
+      --color-grey: #90a4ae;
+      
+      --font-body: 'Outfit', sans-serif;
+      --font-heading: 'Orbitron', sans-serif;
+      --font-cursive: 'Sacramento', cursive;
+    }
+
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: var(--bg-space);
+      color: #ffffff;
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Unified Canvas Overlay */
+    #cosmos-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      transform: translate3d(0, 0, 0);
+      will-change: transform;
+    }
+
+    /* ----------------------------------------------------
+       Sound & Secret Polaris Elements
+       ---------------------------------------------------- */
+    .utility-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    .audio-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: #fff;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      transform: translate3d(0,0,0);
+    }
+
+    .audio-toggle:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05) translate3d(0,0,0);
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 15px var(--glow-cyan);
+    }
+
+    .audio-toggle svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Polaris - Secret Easter Egg Trigger */
+    .polaris-container {
+      position: relative;
+    }
+
+    .polaris {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      color: #fff;
+      animation: rotateSlow 20s linear infinite, pulseGlowLight 2s infinite alternate;
+      transition: transform 0.3s ease, color 0.3s ease, filter 0.3s ease;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+      transform: translate3d(0,0,0);
+    }
+
+    .polaris:hover {
+      color: var(--color-gold);
+      transform: scale(1.2) translate3d(0,0,0);
+      filter: drop-shadow(0 0 12px var(--color-gold));
+    }
+
+    .polaris-tooltip {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      font-family: var(--font-heading);
+      letter-spacing: 1px;
+    }
+
+    .polaris-container:hover .polaris-tooltip {
+      opacity: 1;
+    }
+
+    /* ----------------------------------------------------
+       Screens (Loading & Landing)
+       ---------------------------------------------------- */
+    .screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      transition: opacity 1s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 1s;
+    }
+
+    /* Loading Screen */
+    #loading-screen {
+      background: #05050d;
+      z-index: 60;
+    }
+
+    .galaxy-loader {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .galaxy-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid transparent;
+      border-top-color: var(--color-pink);
+      border-bottom-color: var(--color-cyan);
+      border-radius: 50%;
+      animation: rotateSlow 2s linear infinite;
+    }
+
+    .galaxy-ring-inner {
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      border: 2px solid transparent;
+      border-left-color: var(--color-gold);
+      border-right-color: var(--color-pink);
+      border-radius: 50%;
+      animation: rotateReverse 1.5s linear infinite;
+    }
+
+    .loader-heart {
+      font-size: 1.8rem;
+      color: var(--color-pink);
+      animation: heartBeat 1.2s infinite;
+      text-shadow: 0 0 10px var(--glow-pink);
+    }
+
+    .loading-text {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .loading-percentage {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    /* Landing Screen */
+    #landing-screen {
+      background: radial-gradient(circle at center, rgba(16, 13, 40, 0.9) 0%, rgba(5, 5, 13, 0.95) 80%);
+      backdrop-filter: blur(8px);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .landing-content {
+      max-width: 700px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease 0.3s;
+    }
+
+    #landing-screen.loaded .landing-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .landing-title {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 15px;
+      background: linear-gradient(to right, #fff, var(--color-pink), var(--color-cyan), #fff);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textGradient 6s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+    }
+
+    .landing-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    .btn-enter {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      padding: 16px 40px;
+      border-radius: 40px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      transform: translate3d(0,0,0);
+    }
+
+    .btn-enter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: all 0.6s ease;
+    }
+
+    .btn-enter:hover::before {
+      left: 100%;
+    }
+
+    .btn-enter:hover {
+      background: rgba(255, 64, 129, 0.1);
+      border-color: var(--color-pink);
+      transform: scale(1.05) translate3d(0,0,0);
+      box-shadow: 0 0 25px var(--glow-pink);
+    }
+
+    /* ----------------------------------------------------
+       App Interface (Main Dashboard)
+       ---------------------------------------------------- */
+    #app-interface {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.5s ease;
+      padding: 30px;
+      overflow: hidden;
+    }
+
+    #app-interface.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Interface Header */
+    .app-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .app-title {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .app-subtitle {
+      font-size: 0.9rem;
+      color: var(--color-pink);
+      letter-spacing: 2px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px var(--glow-pink);
+    }
+
+    /* Duration Ticker (Global Header Counter) */
+    .duration-ticker {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 30px;
+      padding: 8px 24px;
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      letter-spacing: 1.5px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .duration-number {
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+      display: flex;
+      flex: 1;
+      gap: 30px;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Side: Countdown Center */
+    .countdown-center {
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    /* glass-card: optimized backdrop-filter for rendering speed */
+    .glass-card {
+      background: rgba(13, 11, 30, 0.94);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--color-pink);
+    }
+
+    /* Timer Countdown Styling */
+    .timer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .timer-unit {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+    }
+
+    .timer-value {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--color-cyan);
+      text-shadow: 0 0 8px var(--glow-cyan);
+      line-height: 1.1;
+    }
+
+    .timer-label {
+      font-size: 0.6rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    .status-item:last-child {
+      border: none;
+    }
+
+    .status-label {
+      color: var(--text-secondary);
+    }
+
+    .status-val {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-green);
+      box-shadow: 0 0 8px var(--color-green);
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    /* Center/Right: Celestial Orbit Map */
+    .orbit-container {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .sun {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 0%, var(--color-pink) 50%, #6a0035 100%);
+      box-shadow: 0 0 50px rgba(255, 64, 129, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 8;
+      transform: translate3d(0, 0, 0);
+      animation: pulseScale 3s infinite ease-in-out alternate;
+    }
+
+    .sun-glow {
+      position: absolute;
+      width: 140%;
+      height: 140%;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 64, 129, 0.3);
+      animation: rotateSlow 25s linear infinite;
+      transform: translate3d(0,0,0);
+    }
+
+    .sun-heart {
+      font-size: 2.2rem;
+      color: #fff;
+      animation: heartBeat 1.5s infinite ease-in-out;
+      transform-origin: center;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: rotateSlow 70s linear infinite;
+      transform: translate3d(0,0,0);
+    }
+
+    .planet-wrapper {
+      position: absolute;
+      left: calc(50% - 40px);
+      top: calc(50% - 40px);
+      width: 80px;
+      height: 80px;
+      pointer-events: all;
+      --angle: calc(360deg / 7 * var(--index));
+      transform: rotate(var(--angle)) translate(250px);
+    }
+
+    .planet {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      /* GPU Accelerated float keyframe using translate3d */
+      transform: translate3d(0,0,0) rotate(calc(-1 * var(--angle)));
+      animation: float calc(3.5s + var(--index) * 0.4s) ease-in-out infinite alternate;
+      transition: filter 0.3s ease;
+    }
+
+    .planet:hover {
+      /* Scales on hover cleanly without layout shifts */
+      filter: brightness(1.2);
+    }
+
+    .planet-sphere {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+      transition: transform 0.3s ease;
+      transform: translate3d(0,0,0);
+    }
+
+    .planet:hover .planet-sphere {
+      transform: scale(1.15) translate3d(0,0,0);
+    }
+
+    /* CSS Planet Colors & Gradient Lighting */
+    .planet[data-section="special"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #ff80ab, var(--color-pink) 50%, #5d0023);
+      box-shadow: 0 0 20px var(--glow-pink), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    .planet[data-section="ai"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #80deea, var(--color-cyan) 50%, #004b54);
+      box-shadow: 0 0 20px var(--glow-cyan), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    .planet[data-section="timeline"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #ffe082, var(--color-gold) 50%, #603d00);
+      box-shadow: 0 0 20px var(--glow-gold), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    .planet[data-section="gallery"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #e040fb, var(--color-purple) 50%, #2f004a);
+      box-shadow: 0 0 20px rgba(170, 0, 255, 0.5), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    .planet[data-section="future"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #69f0ae, var(--color-green) 50%, #003612);
+      box-shadow: 0 0 20px rgba(0, 230, 118, 0.5), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    .planet[data-section="compatibility"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #e1bee7, #9c27b0 50%, #200028);
+      box-shadow: 0 0 20px rgba(156, 39, 176, 0.5), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Locked Planet style */
+    .planet[data-section="report"] .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #cfd8dc, var(--color-grey) 50%, #263238);
+      box-shadow: 0 0 10px rgba(144, 164, 174, 0.3), inset -5px -5px 10px rgba(0, 0, 0, 0.8);
+      transition: all 0.5s ease;
+    }
+    .planet[data-section="report"].unlocked .planet-sphere {
+      background: radial-gradient(circle at 30% 30%, #fff9c4, var(--color-gold) 50%, #e65100) !important;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), inset -5px -5px 10px rgba(0, 0, 0, 0.8) !important;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    /* Planet Rings (Saturn style) */
+    .planet-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140%;
+      height: 25%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      transform: translate3d(-50%, -50%, 0) rotateX(70deg) rotateY(-15deg);
+      pointer-events: none;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+    
+    .planet[data-section="special"] .planet-ring {
+      border-color: rgba(255, 64, 129, 0.5);
+      box-shadow: 0 0 8px rgba(255, 64, 129, 0.3);
+    }
+    .planet[data-section="ai"] .planet-ring {
+      border-color: rgba(0, 229, 255, 0.5);
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+    }
+
+    /* Lock overlay for report */
+    .lock-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(1px);
+      z-index: 12;
+      transition: all 0.5s ease;
+    }
+    
+    .lock-overlay svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    .planet[data-section="report"].unlocked .lock-overlay {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.5) translate3d(0,0,0);
+    }
+
+    /* Planet Labels */
+    .planet-label {
+      font-family: var(--font-heading);
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-top: 8px;
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+      font-weight: 600;
+    }
+
+    .planet:hover .planet-label {
+      color: var(--color-cyan);
+    }
+    
+    .planet[data-section="report"]:not(.unlocked):hover .planet-label {
+      color: var(--color-grey);
+    }
+
+    /* Visited Indicator Tick */
+    .visited-indicator {
+      position: absolute;
+      top: -3px;
+      right: 12px;
+      background: var(--color-green);
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 9px;
+      color: #000;
+      font-weight: bold;
+      border: 1px solid #000;
+      opacity: 0;
+      transform: scale(0) translate3d(0,0,0);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+      z-index: 15;
+    }
+    
+    .planet.visited .visited-indicator {
+      opacity: 1;
+      transform: scale(1) translate3d(0,0,0);
+    }
+
+    /* ----------------------------------------------------
+       Modals / Inner Panels
+       ---------------------------------------------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-card {
+      width: 90%;
+      max-width: 680px;
+      max-height: 85vh;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.92) translateY(25px);
+      transition: transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    /* Custom Border Glow classes based on Section */
+    .modal-card.glow-pink { border-color: rgba(255, 64, 129, 0.3); box-shadow: 0 0 30px rgba(255, 64, 129, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7); }
+    .modal-card.glow-cyan { border-color: rgba(0, 229, 255, 0.3); box-shadow: 0 0 30px rgba(0, 229, 255, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7); }
+    .modal-card.glow-gold { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7); }
+    .modal-card.glow-purple { border-color: rgba(170, 0, 255, 0.3); box-shadow: 0 0 30px rgba(170, 0, 255, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7); }
+    .modal-card.glow-green { border-color: rgba(0, 230, 118, 0.3); box-shadow: 0 0 30px rgba(0, 230, 118, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7); }
+
+    .modal-header {
+      padding: 22px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-title svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 28px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* ----------------------------------------------------
+       Section: Why You're Special (❤️)
+       ---------------------------------------------------- */
+    .special-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    @media (min-width: 600px) {
+      .special-layout {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 25px;
+        align-items: center;
+      }
+    }
+
+    .constellation-wrapper {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .constellation-svg {
+      width: 100%;
+      height: auto;
+      max-width: 320px;
+      overflow: visible;
+    }
+
+    .const-line {
+      stroke: rgba(255, 64, 129, 0.15);
+      stroke-width: 1.5;
+      stroke-dasharray: 4 4;
+      transition: all 0.6s ease;
+    }
+
+    .const-line.active {
+      stroke: var(--color-pink);
+      stroke-width: 2.5;
+      stroke-dasharray: 0;
+      filter: drop-shadow(0 0 5px var(--color-pink));
+    }
+
+    .const-star {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .star-core {
+      fill: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+
+    .star-glow {
+      fill: var(--color-pink);
+      fill-opacity: 0.1;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    .const-star:hover .star-core {
+      fill: #fff;
+      r: 6;
+    }
+
+    .const-star:hover .star-glow,
+    .const-star.active .star-glow {
+      fill-opacity: 0.45;
+      animation: pulseScale 1.5s infinite alternate;
+    }
+
+    .const-star.active .star-core {
+      fill: var(--color-pink);
+      r: 7;
+      filter: drop-shadow(0 0 4px #fff);
+    }
+
+    .special-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .special-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translate3d(0,0,0);
+    }
+
+    .special-item:hover, .special-item.active {
+      background: rgba(255, 64, 129, 0.07);
+      border-color: rgba(255, 64, 129, 0.3);
+      color: #fff;
+      transform: translate3d(5px, 0, 0);
+    }
+
+    .special-item::before {
+      content: '✦';
+      color: var(--color-pink);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .special-item.active::before {
+      opacity: 1;
+      text-shadow: 0 0 5px var(--color-pink);
+    }
+
+    .special-display-card {
+      background: rgba(255, 64, 129, 0.05);
+      border: 1px dashed rgba(255, 64, 129, 0.25);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      min-height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.5;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .special-display-card span {
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* ----------------------------------------------------
+       Section: AI Companion (🤖)
+       ---------------------------------------------------- */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 520px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .chat-message {
+      max-width: 80%;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      animation: messageSlideIn 0.3s cubic-bezier(0.1, 0.8, 0.2, 1);
+      transform: translate3d(0,0,0);
+    }
+
+    .chat-message.ai {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom-left-radius: 4px;
+      color: #fff;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(0, 229, 255, 0.05));
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-bottom-right-radius: 4px;
+      color: #fff;
+    }
+
+    /* Typist caret */
+    .typing-caret {
+      display: inline-block;
+      width: 6px;
+      height: 15px;
+      background: var(--color-cyan);
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+
+    .chat-suggestions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      overflow-x: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.01);
+      flex-shrink: 0;
+    }
+
+    .chat-suggestions::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .chat-suggest-btn {
+      background: rgba(0, 229, 255, 0.06);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    .chat-suggest-btn:hover {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 8px var(--glow-cyan);
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 10px 20px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .chat-send-btn {
+      background: var(--color-cyan);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: #000;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .chat-send-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px var(--glow-cyan);
+    }
+
+    .chat-send-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* ----------------------------------------------------
+       Section: Our Timeline (📖)
+       ---------------------------------------------------- */
+    .timeline-container {
+      position: relative;
+      padding: 20px 0;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, var(--color-gold) 10%, var(--color-gold) 90%, transparent);
+      opacity: 0.3;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+      padding-left: 50px;
+      opacity: 0;
+      transform: translate3d(0, 20px, 0);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .timeline-item.active {
+      opacity: 1;
+      transform: translate3d(0,0,0);
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 11px;
+      top: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #000;
+      border: 2px solid var(--color-gold);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px var(--glow-gold);
+      z-index: 5;
+    }
+
+    .timeline-dot-inner {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-gold);
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    .timeline-date {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--color-gold);
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .timeline-content-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ----------------------------------------------------
+       Section: Memory Gallery (📸)
+       ---------------------------------------------------- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    @media (max-width: 500px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gallery-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      aspect-ratio: 3 / 2;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+      transform: translate3d(0,0,0);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(80%) contrast(1.1);
+      transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.6s ease;
+    }
+
+    .gallery-card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+      padding: 20px 15px 15px;
+      transform: translate3d(0, 10px, 0);
+      opacity: 0.85;
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.4s ease;
+    }
+
+    .gallery-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gallery-card:hover {
+      transform: scale(1.03) translate3d(0,0,0);
+      border-color: var(--color-purple);
+      box-shadow: 0 8px 25px rgba(170, 0, 255, 0.3);
+    }
+
+    .gallery-card:hover img {
+      filter: grayscale(0%) contrast(1);
+      transform: scale(1.05) translate3d(0,0,0);
+    }
+
+    .gallery-card:hover .gallery-card-overlay {
+      transform: translate3d(0,0,0);
+      opacity: 1;
+    }
+
+    /* Lightbox Overlay */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(15px);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .lightbox-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 800px;
+      width: 100%;
+      max-height: 75vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .lightbox-content img {
+      width: 100%;
+      height: auto;
+      max-height: 75vh;
+      object-fit: contain;
+    }
+
+    .lightbox-caption {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 20px;
+      text-align: center;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      color: #fff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-nav:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #fff;
+    }
+
+    .lightbox-nav.prev { left: 30px; }
+    .lightbox-nav.next { right: 30px; }
+
+    @media (max-width: 600px) {
+      .lightbox-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+      .lightbox-nav.prev { left: 10px; }
+      .lightbox-nav.next { right: 10px; }
+    }
+
+    /* ----------------------------------------------------
+       Section: Future Adventures (🚀)
+       ---------------------------------------------------- */
+    .bucket-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bucket-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease;
+      transform: translate3d(0,0,0);
+    }
+
+    .bucket-item:hover {
+      background: rgba(0, 230, 118, 0.04);
+      border-color: rgba(0, 230, 118, 0.25);
+      transform: scale(1.01) translate3d(0,0,0);
+    }
+
+    .bucket-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .bucket-checkbox svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: #000;
+      stroke-width: 3;
+      stroke-dasharray: 20;
+      stroke-dashoffset: 20;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .bucket-item.checked .bucket-checkbox {
+      background: var(--color-green);
+      border-color: var(--color-green);
+      box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+    }
+
+    .bucket-item.checked .bucket-checkbox svg {
+      stroke-dashoffset: 0;
+    }
+
+    .bucket-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .bucket-item.checked .bucket-text {
+      color: var(--text-secondary);
+      text-decoration: line-through rgba(255, 255, 255, 0.3);
+    }
+
+    /* ----------------------------------------------------
+       Section: Compatibility Analyzer (💞)
+       ---------------------------------------------------- */
+    .scanner-overlay-box {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 380px;
+      justify-content: center;
+    }
+
+    .scan-btn {
+      background: rgba(156, 39, 176, 0.1);
+      border: 1px solid rgba(156, 39, 176, 0.4);
+      color: #fff;
+      font-family: var(--font-heading);
+      letter-spacing: 2px;
+      padding: 15px 35px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 15px rgba(156, 39, 176, 0.2);
+      transform: translate3d(0,0,0);
+    }
+
+    .scan-btn:hover {
+      background: rgba(156, 39, 176, 0.25);
+      border-color: #9c27b0;
+      transform: scale(1.05) translate3d(0,0,0);
+      box-shadow: 0 0 25px rgba(156, 39, 176, 0.5);
+    }
+
+    /* Laser Scanner Beam animation */
+    .scanner-beam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #9c27b0, var(--color-cyan), #9c27b0, transparent);
+      box-shadow: 0 0 15px #9c27b0, 0 0 8px var(--color-cyan);
+      animation: scanEffect 2s linear infinite;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scanner-active .scanner-beam {
+      opacity: 1;
+    }
+
+    .scanner-logs {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.75rem;
+      color: var(--color-cyan);
+      width: 100%;
+      max-width: 450px;
+      max-height: 180px;
+      overflow-y: hidden;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-align: left;
+    }
+
+    /* Compatibility Results */
+    .scan-results {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .stat-labels .val {
+      color: #fff;
+    }
+
+    .stat-bar-bg {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      width: 0;
+      transition: width 1.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+    }
+
+    .badge-chemistry {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      font-family: var(--font-heading);
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-left: 10px;
+      box-shadow: 0 0 8px var(--glow-gold);
+      animation: pulseGlowLight 1.5s infinite alternate;
+    }
+
+    .quote-box {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 20px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--color-pink);
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ----------------------------------------------------
+       Section: Mission Report (🔒/📖)
+       ---------------------------------------------------- */
+    .locked-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 20px;
+      min-height: 250px;
+    }
+
+    .locked-lock {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-secondary);
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      animation: float 3s ease-in-out infinite alternate;
+    }
+
+    .locked-lock svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    .locked-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .locked-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      max-width: 320px;
+      line-height: 1.5;
+    }
+
+    .mission-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mission-checklist {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mission-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 10px;
+    }
+
+    .mission-list-item:last-child {
+      border: none;
+      padding-bottom: 0;
+    }
+
+    .mission-label {
+      color: var(--text-secondary);
+    }
+
+    .mission-val {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .mission-val.success {
+      color: var(--color-green);
+      text-shadow: 0 0 5px rgba(0, 230, 118, 0.3);
+    }
+
+    .mission-final-letter {
+      background: radial-gradient(circle at center, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+      border: 1px dashed rgba(255, 215, 0, 0.25);
+      border-radius: 12px;
+      padding: 24px;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+      font-weight: 300;
+    }
+
+    /* ----------------------------------------------------
+       Easter Egg: Handwritten Envelope & Letter
+       ---------------------------------------------------- */
+    #envelope-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #envelope-modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .envelope-box {
+      width: 90%;
+      max-width: 460px;
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Elegant Envelope SVG Vector */
+    .envelope {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    }
+
+    .envelope:hover {
+      transform: scale(1.03) rotate(-1deg);
+    }
+
+    .letter-paper {
+      width: 90%;
+      max-width: 520px;
+      background: radial-gradient(circle, #fffdf0 0%, #f6f0d0 100%);
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      padding: 40px;
+      color: #3b2a1a;
+      display: none;
+      opacity: 0;
+      transform: translateY(100px) scale(0.9) translate3d(0,0,0);
+      transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.8s ease;
+      position: relative;
+    }
+
+    .letter-paper.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1) translate3d(0,0,0);
+    }
+
+    .letter-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #8c7355;
+      font-size: 1.6rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .letter-close:hover {
+      color: #3b2a1a;
+    }
+
+    .letter-body {
+      font-family: var(--font-cursive);
+      font-size: 1.85rem;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .letter-body p {
+      margin-bottom: 20px;
+    }
+
+    .letter-body .signature {
+      text-align: right;
+      margin-top: 30px;
+      font-size: 2.1rem;
+    }
+
+    /* ----------------------------------------------------
+       Animations & Keyframes
+       ---------------------------------------------------- */
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateReverse {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.15); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.15); }
+      70% { transform: scale(1); }
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 15px rgba(255, 64, 129, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 30px rgba(255, 64, 129, 0.8), 0 0 15px rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    @keyframes pulseGlowLight {
+      0% {
+        opacity: 0.7;
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+      }
+      100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1));
+      }
+    }
+
+    @keyframes pulseScale {
+      0% { transform: scale(0.96) translate3d(0,0,0); }
+      100% { transform: scale(1.04) translate3d(0,0,0); }
+    }
+
+    /* GPU-friendly 3D float keyframe to replace layout paint overhead */
+    @keyframes float {
+      from { transform: translate3d(0, 0px, 0) rotate(calc(-1 * var(--angle))); }
+      to { transform: translate3d(0, -10px, 0) rotate(calc(-1 * var(--angle))); }
+    }
+
+    @keyframes floatMobile {
+      from { transform: translate3d(0, 0px, 0); }
+      to { transform: translate3d(0, -6px, 0); }
+    }
+
+    @keyframes textGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes messageSlideIn {
+      from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.96); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    @keyframes scanEffect {
+      0% { top: 0%; }
+      50% { top: 100%; }
+      100% { top: 0%; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    /* ----------------------------------------------------
+       Media Queries & Mobile Optimizations
+       ---------------------------------------------------- */
+    @media (max-width: 992px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+      }
+      
+      #app-interface {
+        height: auto;
+        overflow-y: visible;
+        padding: 20px 15px;
+      }
+      
+      .dashboard-container {
+        flex-direction: column-reverse;
+        gap: 30px;
+        height: auto;
+        overflow: visible;
+      }
+
+      .countdown-center {
+        width: 100%;
+      }
+
+      .orbit-container {
+        width: 100%;
+        height: auto;
+        padding: 40px 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .landing-title {
+        font-size: 1.8rem;
+      }
+      .landing-subtitle {
+        font-size: 0.95rem;
+      }
+
+      /* Mobile Constellation Planet Layout */
+      .orbit-ring {
+        display: none;
+      }
+      .sun {
+        display: none;
+      }
+      .orbit-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        perspective: none;
+      }
+      .planet-wrapper {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 100%;
+        height: auto;
+        transform: none !important;
+      }
+      .planet {
+        transform: none !important;
+        animation: floatMobile 3s ease-in-out infinite alternate !important;
+        background: rgba(13, 11, 30, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        width: 100%;
+        padding: 15px 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        justify-content: flex-start;
+      }
+      .planet-sphere {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+      .planet-label {
+        margin-top: 0;
+        font-size: 0.72rem;
+        text-align: left;
+      }
+      .visited-indicator {
+        top: -4px;
+        right: -4px;
+      }
+      .planet-ring {
+        display: none !important; /* Hide Saturn rings on mobile for compact list */
+      }
+      .planet[data-section="report"] {
+        grid-column: span 2;
+        justify-content: center;
+      }
+      .planet[data-section="report"] .planet-label {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Unified Background Canvas for Stars & Interactive Effects -->
+  <canvas id="cosmos-canvas"></canvas>
+
+  <!-- Sound and Secret Polaris in Header -->
+  <div class="utility-bar">
+    <!-- Secret Polaris Star -->
+    <div class="polaris-container">
+      <svg class="polaris" id="polaris-star" viewBox="0 0 24 24">
+        <!-- Polaris SVG Compass Star shape -->
+        <path fill="currentColor" d="M12,2L14.4,9.6L22,12L14.4,14.4L12,22L9.6,14.4L2,12L9.6,9.6Z"/>
+      </svg>
+      <div class="polaris-tooltip">POLARIS</div>
+    </div>
+    
+    <!-- Audio Button -->
+    <button class="audio-toggle" id="music-toggle" title="Toggle Celestial Sound">
+      <!-- Speaker Off Icon -->
+      <svg id="music-off-icon" viewBox="0 0 24 24">
+        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-11 5.77h4l5-5v16l-5-5h-4v-6z"/>
+      </svg>
+      <!-- Speaker On Icon (hidden by default) -->
+      <svg id="music-on-icon" viewBox="0 0 24 24" style="display: none;">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Loading Screen -->
+  <div class="screen" id="loading-screen">
+    <div class="galaxy-loader">
+      <div class="galaxy-ring"></div>
+      <div class="galaxy-ring-inner"></div>
+      <div class="loader-heart">❤️</div>
+    </div>
+    <div class="loading-text">Calibrating Constellations</div>
+    <div class="loading-percentage" id="load-pct">0%</div>
+  </div>
+
+  <!-- Landing Screen -->
+  <div class="screen" id="landing-screen" style="visibility: hidden; opacity: 0;">
+    <div class="landing-content">
+      <h1 class="landing-title">Welcome to Our Universe</h1>
+      <p class="landing-subtitle">Every star tells a story. Ours started with a single message.</p>
+      <button class="btn-enter" id="btn-enter-universe">ENTER OUR UNIVERSE</button>
+    </div>
+  </div>
+
+  <!-- Main App Interface -->
+  <div id="app-interface">
+    <header class="app-header">
+      <h2 class="app-title">Our Universe</h2>
+      <div class="app-subtitle">Marsden & Beatrice</div>
+      <!-- Global duration ticker -->
+      <div class="duration-ticker" id="duration-ticker">
+        Sharing our universe for: <span class="duration-number" id="global-counter">00d 00h 00m 00s</span>
+      </div>
+    </header>
+
+    <div class="dashboard-container">
+      <!-- Left: Countdown Center -->
+      <div class="countdown-center">
+        <!-- Live Countdown Card -->
+        <div class="glass-card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+            Weekend Adventure
+          </div>
+          <div class="timer-grid" id="weekend-timer">
+            <div class="timer-unit">
+              <div class="timer-value" id="wk-days">00</div>
+              <div class="timer-label">Days</div>
+            </div>
+            <div class="timer-unit">
+              <div class="timer-value" id="wk-hours">00</div>
+              <div class="timer-label">Hrs</div>
+            </div>
+            <div class="timer-unit">
+              <div class="timer-value" id="wk-mins">00</div>
+              <div class="timer-label">Min</div>
+            </div>
+            <div class="timer-unit">
+              <div class="timer-value" id="wk-secs">00</div>
+              <div class="timer-label">Sec</div>
+            </div>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-secondary); text-align: center; margin-top: 10px;" id="timer-status-label">
+            Until Weekend Adventure Ends
+          </div>
+        </div>
+
+        <!-- Connection Status Card -->
+        <div class="glass-card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            System Health
+          </div>
+          <div class="status-item">
+            <span class="status-label">Orbit Status:</span>
+            <span class="status-val">Synchronized <div class="pulse-dot"></div></span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Chemistry:</span>
+            <span class="status-val" style="color: var(--color-gold);">100% Unlocked</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Signal Strength:</span>
+            <span class="status-val" style="color: var(--color-cyan);">Infinite</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Orbit Space Map -->
+      <div class="orbit-container">
+        <!-- Sun (Center Heart) -->
+        <div class="sun">
+          <div class="sun-glow"></div>
+          <div class="sun-heart">❤️</div>
+        </div>
+
+        <!-- Orbit Ring -->
+        <div class="orbit-ring" id="orbit-ring">
+          
+          <!-- Planet 1: Special -->
+          <div class="planet-wrapper" style="--index: 0;">
+            <div class="planet" data-section="special" title="Why You're Special">
+              <div class="planet-sphere">
+                <div class="planet-ring"></div>
+              </div>
+              <div class="planet-label">Special</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 2: AI Companion -->
+          <div class="planet-wrapper" style="--index: 1;">
+            <div class="planet" data-section="ai" title="AI Companion">
+              <div class="planet-sphere">
+                <div class="planet-ring" style="transform: translate3d(-50%, -50%, 0) rotateX(-65deg) rotateY(10deg);"></div>
+              </div>
+              <div class="planet-label">AI Companion</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 3: Our Timeline -->
+          <div class="planet-wrapper" style="--index: 2;">
+            <div class="planet" data-section="timeline" title="Our Timeline">
+              <div class="planet-sphere"></div>
+              <div class="planet-label">Timeline</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 4: Memory Gallery -->
+          <div class="planet-wrapper" style="--index: 3;">
+            <div class="planet" data-section="gallery" title="Memory Gallery">
+              <div class="planet-sphere"></div>
+              <div class="planet-label">Memories</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 5: Future Adventures -->
+          <div class="planet-wrapper" style="--index: 4;">
+            <div class="planet" data-section="future" title="Future Adventures">
+              <div class="planet-sphere"></div>
+              <div class="planet-label">Bucket List</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 6: Compatibility Analyzer -->
+          <div class="planet-wrapper" style="--index: 5;">
+            <div class="planet" data-section="compatibility" title="Compatibility Analyzer">
+              <div class="planet-sphere"></div>
+              <div class="planet-label">Scanner</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+          <!-- Planet 7: Mission Report (Locked) -->
+          <div class="planet-wrapper" style="--index: 6;">
+            <div class="planet" data-section="report" id="report-planet" title="Mission Report">
+              <div class="lock-overlay" id="report-lock">
+                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              </div>
+              <div class="planet-sphere"></div>
+              <div class="planet-label">Mission</div>
+              <div class="visited-indicator">✓</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ----------------------------------------------------
+       Modal Windows for Sections
+       ---------------------------------------------------- -->
+  
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modal-overlay">
+    
+    <!-- 1. Why You're Special Modal -->
+    <div class="modal-card glow-pink" data-section="special" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-pink);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          Why You're Special
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="special-container">
+          <div class="special-layout">
+            <div class="constellation-wrapper">
+              <!-- Custom Heart Constellation SVG -->
+              <svg viewBox="0 0 400 300" class="constellation-svg" id="special-constellation">
+                <!-- Constellation Lines -->
+                <line x1="200" y1="240" x2="90" y2="180" class="const-line" id="line-0-1" />
+                <line x1="90" y1="180" x2="70" y2="90" class="const-line" id="line-1-2" />
+                <line x1="70" y1="90" x2="200" y2="120" class="const-line" id="line-2-3" />
+                <line x1="200" y1="120" x2="330" y2="90" class="const-line" id="line-3-4" />
+                <line x1="330" y1="90" x2="310" y2="180" class="const-line" id="line-4-5" />
+                <line x1="310" y1="180" x2="200" y2="240" class="const-line" id="line-5-0" />
+                <line x1="200" y1="120" x2="200" y2="40" class="const-line" id="line-3-6" />
+
+                <!-- Glowing Stars -->
+                <g class="const-star" data-index="0" transform="translate(200, 240)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="1" transform="translate(90, 180)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="2" transform="translate(70, 90)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="3" transform="translate(200, 120)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="4" transform="translate(330, 90)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="5" transform="translate(310, 180)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+                <g class="const-star" data-index="6" transform="translate(200, 40)">
+                  <circle r="14" class="star-glow" />
+                  <circle r="5" class="star-core" />
+                </g>
+              </svg>
+            </div>
+            
+            <ul class="special-list">
+              <li class="special-item" data-index="0">Conversations</li>
+              <li class="special-item" data-index="1">Checking my phone</li>
+              <li class="special-item" data-index="2">Effortless spark</li>
+              <li class="special-item" data-index="3">Excellent judgment</li>
+              <li class="special-item" data-index="4">Curiosity & Books</li>
+              <li class="special-item" data-index="5">Movie tastes</li>
+              <li class="special-item" data-index="6">Water & Swimming</li>
+            </ul>
+          </div>
+          
+          <div class="special-display-card" id="special-text-display">
+            Tap a star on the constellation or a list item to reveal what makes you so special...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. AI Companion Modal -->
+    <div class="modal-card glow-cyan" data-section="ai" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-cyan);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2-v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3zm-2 10H6V7h12v12zm-9-6c-.83 0-1.5-.67-1.5-1.5S8.17 10 9 10s1.5.67 1.5 1.5S9.83 13 9 13zm6 0c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-5.72 2.9h5.44c-.56.98-1.62 1.6-2.72 1.6s-2.16-.62-2.72-1.6z"/></svg>
+          Cosmic AI Companion
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0;">
+        <div class="chat-container">
+          <div class="chat-messages" id="chat-box">
+            <div class="chat-message ai">
+              Hello Marsden! I am your Cosmic Companion, tracking Marsden and Beatrice's coordinate sync in this galaxy. Type a message or click a prompt below to access my database! 🌌
+            </div>
+          </div>
+          
+          <div class="chat-suggestions">
+            <button class="chat-suggest-btn" data-query="Tell me about Beatrice">Beatrice?</button>
+            <button class="chat-suggest-btn" data-query="How did our story start?">Our Start?</button>
+            <button class="chat-suggest-btn" data-query="What happened on Saturday?">Saturday?</button>
+            <button class="chat-suggest-btn" data-query="Tell me about yesterday">Yesterday?</button>
+            <button class="chat-suggest-btn" data-query="This weekend plans?">This Weekend?</button>
+            <button class="chat-suggest-btn" data-query="Tell me a secret">A Secret?</button>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chat-user-input" placeholder="Ask about Beatrice, yesterday, June 16..." autocomplete="off">
+            <button class="chat-send-btn" id="chat-send-btn">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Our Timeline Modal -->
+    <div class="modal-card glow-gold" data-section="timeline" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-gold);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+          Our Timeline
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+          
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">June 16</div>
+            <div class="timeline-content-card">
+              <h4 class="timeline-title">The First Message & Call 💬</h4>
+              <p class="timeline-desc">Our communication channels officially initialized. We started texting, and that very same day we shared our first phone call. Frequencies matched perfectly.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">Saturday</div>
+            <div class="timeline-content-card">
+              <h4 class="timeline-title">First Photos & Flirting 📸</h4>
+              <p class="timeline-desc">Sharing snippets of our worlds. Flirting began, and the digital signals started carrying genuine warmth. A Saturday to remember.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">June 21</div>
+            <div class="timeline-content-card">
+              <h4 class="timeline-title">First Long Meaningful Phone Call 📞</h4>
+              <p class="timeline-desc">A late night conversation that ran deep. We talked, laughed, and discovered how easy and natural it is to share everything.</p>
+            </div>
+          </div>
+
+          <div id="dynamic-timeline-elements">
+            <!-- Dynamic items loaded via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Memory Gallery Modal -->
+    <div class="modal-card glow-purple" data-section="gallery" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-purple);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          Memory Gallery
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="gallery-grid">
+          
+          <div class="gallery-card" data-idx="0">
+            <img src="./assets/first_hug.jpg" alt="First hug">
+            <div class="gallery-card-overlay">
+              <div class="gallery-card-title">❤️ First Hug</div>
+            </div>
+          </div>
+
+          <div class="gallery-card" data-idx="1">
+            <img src="./assets/laughing_together.jpg" alt="That moment we couldn't stop laughing">
+            <div class="gallery-card-overlay">
+              <div class="gallery-card-title">😂 Unstoppable Laughter</div>
+            </div>
+          </div>
+
+          <div class="gallery-card" data-idx="2">
+            <img src="./assets/favorite_conversation.jpg" alt="Our favorite conversation">
+            <div class="gallery-card-overlay">
+              <div class="gallery-card-title">☕ Our Favorite Conversation</div>
+            </div>
+          </div>
+
+          <div class="gallery-card" data-idx="3">
+            <img src="./assets/unforgettable_day.jpg" alt="One unforgettable day">
+            <div class="gallery-card-overlay">
+              <div class="gallery-card-title">🌅 One Unforgettable Day</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Future Adventures Modal -->
+    <div class="modal-card glow-green" data-section="future" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-green);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zM13 14h-2v-4h2v4zm0 4h-2v-2h2v2z"/></svg>
+          Future Adventures
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="bucket-list">
+          
+          <div class="bucket-item" data-id="swim">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Go swimming together 🏊‍♀️</div>
+          </div>
+
+          <div class="bucket-item" data-id="movie">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Movie marathon night 🍿🎬</div>
+          </div>
+
+          <div class="bucket-item" data-id="read">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Read books together in cozy quiet 📚</div>
+          </div>
+
+          <div class="bucket-item" data-id="sunset">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Watch a stunning sunset together 🌅</div>
+          </div>
+
+          <div class="bucket-item" data-id="restaurant">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Try an amazing new restaurant 🍕</div>
+          </div>
+
+          <div class="bucket-item" data-id="memories">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Make more unforgettable memories ✨</div>
+          </div>
+
+          <div class="bucket-item" data-id="smile">
+            <div class="bucket-checkbox">
+              <svg viewBox="0 0 24 24"><path fill="none" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="bucket-text">Keep making each other smile endlessly 😊</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Compatibility Analyzer Modal -->
+    <div class="modal-card" data-section="compatibility" style="display: none; border-color: rgba(156, 39, 176, 0.3);">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #9c27b0;">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm-1-17v6H5v2h6v6h2v-6h6v-2h-6V5h-2z"/></svg>
+          Compatibility Analyzer
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="scanner-overlay-box" id="scanner-box">
+          <button class="scan-btn" id="run-scan-btn">INITIATE DEEP HEART SCAN</button>
+          <div class="scanner-beam"></div>
+          <div class="scanner-logs" id="scan-logs"></div>
+          
+          <div class="scan-results" id="scan-results" style="display: none;">
+            
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span>Communication Sync</span>
+                <span class="val" data-target="97">0%</span>
+              </div>
+              <div class="stat-bar-bg">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--color-pink), #e040fb);"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span>Shared Interests</span>
+                <span class="val" data-target="92">0%</span>
+              </div>
+              <div class="stat-bar-bg">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--color-cyan), var(--color-green));"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span>Phone Call Endurance</span>
+                <span class="val" data-target="100">0%</span>
+              </div>
+              <div class="stat-bar-bg">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--color-gold), #ff5722);"></div>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span>Flirting Potential</span>
+                <span class="val" data-target="100">0%</span>
+              </div>
+              <div class="stat-bar-bg">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, #aa00ff, #e040fb);"></div >
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span>Weekend Excitement</span>
+                <span class="val" data-target="100">0%</span>
+              </div>
+              <div class="stat-bar-bg">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, var(--color-green), var(--color-cyan));"></div>
+              </div>
+            </div>
+
+            <div class="stat-row" style="margin-top: 5px;">
+              <div class="stat-labels" style="align-items: center; justify-content: flex-start;">
+                <span>Real-Life Chemistry</span>
+                <span class="badge-chemistry">VERIFIED</span>
+              </div>
+            </div>
+
+            <div class="stat-row" style="margin-top: 5px;">
+              <div class="stat-labels">
+                <span>Overall Orbit Alignment</span>
+                <span class="val" data-target="99" data-decimals="3" data-suffix="%">0.000%</span>
+              </div>
+              <div class="stat-bar-bg" style="height: 14px;">
+                <div class="stat-bar-fill" style="background: linear-gradient(90deg, #ff4081, #ffd700); height: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="quote-box">
+              "She wasn't just the right swipe... she became the right person to spend my time with."
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Mission Report Modal (initially locked stage) -->
+    <div class="modal-card glow-gold" data-section="report" style="display: none;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-gold);">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          Mission Report: Status Active
+        </h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Locked View -->
+        <div class="locked-stage" id="mission-locked-view">
+          <div class="locked-lock">
+            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          </div>
+          <div class="locked-title">Access Restricted</div>
+          <div class="locked-subtitle" id="mission-lock-text">
+            Marsden, you must explore all other sectors of Our Universe first. Visited: 0/6
+          </div>
+        </div>
+
+        <!-- Unlocked View -->
+        <div class="mission-container" id="mission-unlocked-view" style="display: none;">
+          <div class="mission-checklist">
+            <div class="mission-list-item">
+              <span class="mission-label">Initial Contact (June 16):</span>
+              <span class="mission-val success">COMPLETED ✅</span>
+            </div>
+            <div class="mission-list-item">
+              <span class="mission-label">First Phone Call (June 16):</span>
+              <span class="mission-val success">COMPLETED ✅</span>
+            </div>
+            <div class="mission-list-item">
+              <span class="mission-label">First In-Person Date (Yesterday):</span>
+              <span class="mission-val success">COMPLETED ✅</span>
+            </div>
+            <div class="mission-list-item">
+              <span class="mission-label">Core Connection Matrix:</span>
+              <span class="mission-val" style="color: var(--color-pink);">Growing Stronger Every Day</span>
+            </div>
+            <div class="mission-list-item">
+              <span class="mission-label">Weekend Adventure Protocol:</span>
+              <span class="mission-val" style="color: var(--color-cyan);">In Progress ⚡</span>
+            </div>
+            <div class="mission-list-item">
+              <span class="mission-label">Future Travel & Explorations:</span>
+              <span class="mission-val" style="color: var(--color-gold);">Loading... ⏳</span>
+            </div>
+          </div>
+
+          <div class="mission-final-letter">
+            "Some people spend years searching for someone who feels like home. I feel lucky our paths crossed on June 16. Yesterday became one of my favorite memories, and I think we're only getting started. Of all the stars in this universe, you're still my favorite discovery."
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Lightbox Gallery Panel -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close">&times;</button>
+    <button class="lightbox-nav prev">&#10094;</button>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="Zoomed view">
+    </div>
+    <div class="lightbox-caption" id="lightbox-caption">Caption text</div>
+    <button class="lightbox-nav next">&#10095;</button>
+  </div>
+
+  <!-- Secret Envelope Overlay -->
+  <div id="envelope-modal">
+    <div class="envelope-box" id="envelope-box">
+      <!-- SVG Vector Envelope -->
+      <svg class="envelope" viewBox="0 0 600 400" id="envelope-svg">
+        <!-- Back Envelope body -->
+        <rect width="600" height="400" fill="#2d1f10" rx="15" />
+        <!-- Inner flap shadow/background -->
+        <path d="M 0,100 L 300,280 L 600,100 L 600,400 L 0,400 Z" fill="#402e1c" />
+        <!-- Bottom triangular fold -->
+        <path d="M 0,400 L 300,220 L 600,400 Z" fill="#4d3722" />
+        <!-- Side triangular folds -->
+        <path d="M 0,100 L 220,250 L 0,400 Z" fill="#543c25" />
+        <path d="M 600,100 L 380,250 L 600,400 Z" fill="#543c25" />
+        <!-- Top flap (closed initially) -->
+        <path id="envelope-flap" d="M 0,100 L 300,280 L 600,100 Z" fill="#63472d" />
+        
+        <!-- Wax Seal (pulsing) -->
+        <circle cx="300" cy="245" r="35" fill="#a81616" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))" id="wax-seal" />
+        <!-- Star emblem inside wax seal -->
+        <path d="M 300,225 L 305,240 L 320,245 L 305,250 L 300,265 L 295,250 L 280,245 L 295,240 Z" fill="#ffd700" pointer-events="none" />
+      </svg>
+    </div>
+
+    <!-- Letter Paper -->
+    <div class="letter-paper" id="letter-paper">
+      <button class="letter-close" id="letter-close-btn">&times;</button>
+      <div class="letter-body">
+        <p>Dear Beatrice,</p>
+        <p>Thank you for making ordinary days feel so extraordinary. Knowing you has made this universe feel so much brighter, and I look forward to checking my phone every single day just to see your name.</p>
+        <p>Yesterday was one of my favorite memories, and I'm so excited for this weekend and all the adventures we have ahead of us.</p>
+        <p>Of all the stars in this universe, you're still my favorite discovery.</p>
+        <p class="signature">With love,<br>Marsden ❤️</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ----------------------------------------------------
+       Scripts: Mechanics & Orchestration
+       ---------------------------------------------------- -->
+  <script>
+    // ----------------------------------------------------
+    // Web Audio Synthesizer Class
+    // ----------------------------------------------------
+    class CosmicSynth {
+      constructor() {
+        this.ctx = null;
+        this.osc1 = null;
+        this.osc2 = null;
+        this.filter = null;
+        this.delay = null;
+        this.delayFeedback = null;
+        this.gainNode = null;
+        this.isPlaying = false;
+        this.lfo = null;
+        this.lfoGain = null;
+      }
+      
+      init() {
+        if (this.ctx) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+        
+        // Osc 1 - Deep pad
+        this.osc1 = this.ctx.createOscillator();
+        this.osc1.type = 'triangle';
+        this.osc1.frequency.setValueAtTime(110, this.ctx.currentTime); // A2
+        
+        // Osc 2 - Harmony pad (Perfect fifth + octave)
+        this.osc2 = this.ctx.createOscillator();
+        this.osc2.type = 'sine';
+        this.osc2.frequency.setValueAtTime(165, this.ctx.currentTime); // E3 (fifth)
+        
+        // Lowpass filter to keep it warm and ambient
+        this.filter = this.ctx.createBiquadFilter();
+        this.filter.type = 'lowpass';
+        this.filter.frequency.setValueAtTime(450, this.ctx.currentTime);
+        this.filter.Q.setValueAtTime(4, this.ctx.currentTime);
+        
+        // Delay Line for space reverb
+        this.delay = this.ctx.createDelay(2.0);
+        this.delay.delayTime.setValueAtTime(0.65, this.ctx.currentTime);
+        
+        this.delayFeedback = this.ctx.createGain();
+        this.delayFeedback.gain.setValueAtTime(0.45, this.ctx.currentTime);
+        
+        // Main volume gain
+        this.gainNode = this.ctx.createGain();
+        this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime); // Silent initially
+        
+        // Connect Oscillators to Filter
+        this.osc1.connect(this.filter);
+        this.osc2.connect(this.filter);
+        
+        // Connect Filter to main volume and delay
+        this.filter.connect(this.gainNode);
+        this.filter.connect(this.delay);
+        
+        // Connect Delay loop
+        this.delay.connect(this.delayFeedback);
+        this.delayFeedback.connect(this.delay);
+        this.delay.connect(this.gainNode);
+        
+        // Connect to Speakers
+        this.gainNode.connect(this.ctx.destination);
+        
+        // Start Sound Sources
+        this.osc1.start(0);
+        this.osc2.start(0);
+        
+        // LFO to slowly sweep filter frequency (creats breathing effect)
+        this.lfo = this.ctx.createOscillator();
+        this.lfo.type = 'sine';
+        this.lfo.frequency.setValueAtTime(0.04, this.ctx.currentTime); // Very slow cycle (25s)
+        
+        this.lfoGain = this.ctx.createGain();
+        this.lfoGain.gain.setValueAtTime(250, this.ctx.currentTime);
+        
+        this.lfo.connect(this.lfoGain);
+        this.lfoGain.connect(this.filter.frequency);
+        this.lfo.start(0);
+      }
+      
+      start() {
+        this.init();
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.gainNode.gain.linearRampToValueAtTime(0.12, this.ctx.currentTime + 3.0);
+        this.isPlaying = true;
+      }
+      
+      stop() {
+        if (!this.ctx) return;
+        this.gainNode.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
+        this.isPlaying = false;
+      }
+      
+      toggle() {
+        if (this.isPlaying) {
+          this.stop();
+        } else {
+          this.start();
+        }
+        return this.isPlaying;
+      }
+
+      playClick() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const clickOsc = this.ctx.createOscillator();
+        const clickGain = this.ctx.createGain();
+        
+        clickOsc.type = 'sine';
+        clickOsc.frequency.setValueAtTime(600, now);
+        clickOsc.frequency.exponentialRampToValueAtTime(180, now + 0.08);
+        
+        clickGain.gain.setValueAtTime(0.03, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+        
+        clickOsc.connect(clickGain);
+        clickGain.connect(this.ctx.destination);
+        clickOsc.start(now);
+        clickOsc.stop(now + 0.1);
+      }
+
+      playChime() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const arp = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        
+        arp.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+          
+          gain.gain.setValueAtTime(0, now + idx * 0.15);
+          gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.15 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 1.2);
+          
+          osc.connect(gain);
+          gain.connect(this.delay);
+          gain.connect(this.ctx.destination);
+          
+          osc.start(now + idx * 0.15);
+          osc.stop(now + idx * 0.15 + 1.5);
+        });
+      }
+    }
+
+    const synth = new CosmicSynth();
+
+    // ----------------------------------------------------
+    // Unified Cosmos Engine (Optimized Starfield & Effects)
+    // ----------------------------------------------------
+    class CosmosEngine {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.stars = [];
+        this.shootingStars = [];
+        this.particles = [];
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.targetMouseX = 0;
+        this.targetMouseY = 0;
+        this.isPaused = false;
+        this.rafId = null;
+        
+        this.init();
+        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        document.addEventListener('visibilitychange', () => this.onVisibilityChange());
+      }
+      
+      onVisibilityChange() {
+        if (document.hidden) {
+          this.pause();
+        } else {
+          const modalActive = document.getElementById('modal-overlay').classList.contains('active');
+          const envelopeActive = document.getElementById('envelope-modal').classList.contains('active');
+          if (!modalActive && !envelopeActive) {
+            this.unpause();
+          }
+        }
+      }
+      
+      init() {
+        this.resize();
+        this.stars = [];
+        const colorsRGB = [
+          [255, 255, 255], // #ffffff
+          [255, 247, 235], // #fff7eb
+          [235, 245, 255], // #ebf5ff
+          [255, 215, 0],   // #ffd700
+          [255, 64, 129],  // #ff4081
+          [0, 229, 255]    // #00e5ff
+        ];
+        
+        // 120 stars is optimal for background density and performance
+        for (let i = 0; i < 120; i++) {
+          this.stars.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 1.5 + 0.4,
+            alpha: Math.random(),
+            speed: Math.random() * 0.012 + 0.003,
+            colorRGB: colorsRGB[Math.floor(Math.random() * colorsRGB.length)],
+            parallaxFactor: Math.random() * 15 + 5
+          });
+        }
+      }
+      
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+      
+      onMouseMove(e) {
+        if (this.isPaused) return;
+        this.targetMouseX = (e.clientX - window.innerWidth / 2) / 30;
+        this.targetMouseY = (e.clientY - window.innerHeight / 2) / 30;
+      }
+      
+      spawnBurst(x, y, type = 'heart', count = 18) {
+        const colors = ['#ff4081', '#ff80ab', '#ffe082', '#ffd700', '#00e5ff', '#b2ff59'];
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 3 + 1;
+          this.particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - (type === 'heart' ? 0.8 : 0),
+            size: Math.random() * 5 + 2.5,
+            alpha: 1,
+            decay: Math.random() * 0.02 + 0.015,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            type: type,
+            rotation: Math.random() * Math.PI,
+            rotSpeed: Math.random() * 0.08 - 0.04
+          });
+        }
+        
+        // Force loop to execute if currently paused
+        if (this.isPaused && this.rafId === null) {
+          this.loop();
+        }
+      }
+      
+      addShootingStar() {
+        if (this.isPaused) return;
+        if (Math.random() > 0.994 && this.shootingStars.length < 2) {
+          this.shootingStars.push({
+            x: Math.random() * this.canvas.width * 0.8,
+            y: 0,
+            len: Math.random() * 60 + 30,
+            speed: Math.random() * 8 + 6,
+            angle: Math.PI / 4 + (Math.random() * 0.1 - 0.05),
+            alpha: 1
+          });
+        }
+      }
+      
+      pause() {
+        this.isPaused = true;
+      }
+      
+      unpause() {
+        if (this.isPaused) {
+          this.isPaused = false;
+          if (this.rafId === null) {
+            this.loop();
+          }
+        }
+      }
+      
+      loop() {
+        this.draw();
+        
+        // Break requestAnimationFrame loops if paused and no rendering particles exist
+        if (this.isPaused && this.particles.length === 0 && this.shootingStars.length === 0) {
+          this.rafId = null;
+          return;
+        }
+        
+        this.rafId = requestAnimationFrame(() => this.loop());
+      }
+      
+      draw() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // 1. Draw Starfield
+        this.mouseX += (this.targetMouseX - this.mouseX) * 0.05;
+        this.mouseY += (this.targetMouseY - this.mouseY) * 0.05;
+        
+        this.stars.forEach(star => {
+          let sx = star.x - this.mouseX * (10 / star.parallaxFactor);
+          let sy = star.y - this.mouseY * (10 / star.parallaxFactor);
+          
+          if (sx < 0) sx += this.canvas.width;
+          if (sx > this.canvas.width) sx -= this.canvas.width;
+          if (sy < 0) sy += this.canvas.height;
+          if (sy > this.canvas.height) sy -= this.canvas.height;
+          
+          if (!this.isPaused) {
+            star.alpha += star.speed;
+            if (star.alpha > 1 || star.alpha < 0.1) {
+              star.speed = -star.speed;
+            }
+          }
+          
+          const alpha = Math.max(0.1, Math.min(1, star.alpha));
+          this.ctx.fillStyle = `rgba(${star.colorRGB[0]}, ${star.colorRGB[1]}, ${star.colorRGB[2]}, ${alpha})`;
+          
+          // Optimization: Draw simple rectangles instead of circles for tiny stars
+          if (star.size < 1.5) {
+            this.ctx.fillRect(sx - star.size/2, sy - star.size/2, star.size, star.size);
+          } else {
+            this.ctx.beginPath();
+            this.ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+            this.ctx.fill();
+          }
+        });
+        
+        // 2. Draw Shooting Stars
+        this.addShootingStar();
+        this.shootingStars = this.shootingStars.filter(ss => {
+          ss.x += Math.cos(ss.angle) * ss.speed;
+          ss.y += Math.sin(ss.angle) * ss.speed;
+          ss.alpha -= 0.025;
+          
+          if (ss.alpha <= 0) return false;
+          
+          this.ctx.strokeStyle = `rgba(255, 255, 255, ${ss.alpha})`;
+          this.ctx.lineWidth = 1;
+          this.ctx.globalAlpha = 1;
+          this.ctx.beginPath();
+          this.ctx.moveTo(ss.x, ss.y);
+          this.ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+          this.ctx.stroke();
+          
+          return ss.x < this.canvas.width && ss.y < this.canvas.height;
+        });
+        
+        // 3. Draw Burst Click Particles
+        this.particles = this.particles.filter(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.05; // gravity
+          p.vx *= 0.98; // air resistance
+          p.vy *= 0.98;
+          p.alpha -= p.decay;
+          p.rotation += p.rotSpeed;
+          
+          if (p.alpha <= 0) return false;
+          
+          this.ctx.save();
+          this.ctx.globalAlpha = p.alpha;
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate(p.rotation);
+          this.ctx.fillStyle = p.color;
+          
+          if (p.type === 'heart') {
+            this.ctx.beginPath();
+            const size = p.size;
+            this.ctx.moveTo(0, -size / 4);
+            this.ctx.bezierCurveTo(-size / 2, -size, -size, -size / 2, 0, size);
+            this.ctx.bezierCurveTo(size, -size / 2, size / 2, -size, 0, -size / 4);
+            this.ctx.fill();
+          } else {
+            this.ctx.beginPath();
+            const spikes = 4;
+            const outer = p.size;
+            const inner = p.size / 2.5;
+            let rot = Math.PI / 2 * 3;
+            let step = Math.PI / spikes;
+            this.ctx.moveTo(0, -outer);
+            for (let i = 0; i < spikes; i++) {
+              let px = Math.cos(rot) * outer;
+              let py = Math.sin(rot) * outer;
+              this.ctx.lineTo(px, py);
+              rot += step;
+              px = Math.cos(rot) * inner;
+              let cy = Math.sin(rot) * inner;
+              this.ctx.lineTo(px, cy);
+              rot += step;
+            }
+            this.ctx.closePath();
+            this.ctx.fill();
+          }
+          
+          this.ctx.restore();
+          return true;
+        });
+        
+        // Reset canvas alpha config
+        this.ctx.globalAlpha = 1;
+      }
+    }
+
+    const cosmos = new CosmosEngine(document.getElementById('cosmos-canvas'));
+    cosmos.loop();
+
+    // ----------------------------------------------------
+    // Loading Screen Simulation
+    // ----------------------------------------------------
+    let loadProgress = 0;
+    const loadPctEl = document.getElementById('load-pct');
+    const loadingScreen = document.getElementById('loading-screen');
+    const landingScreen = document.getElementById('landing-screen');
+
+    const loadTimer = setInterval(() => {
+      loadProgress += Math.floor(Math.random() * 8) + 4;
+      if (loadProgress >= 100) {
+        loadProgress = 100;
+        clearInterval(loadTimer);
+        
+        setTimeout(() => {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            landingScreen.style.visibility = 'visible';
+            landingScreen.style.opacity = '1';
+            landingScreen.classList.add('loaded');
+          }, 1000);
+        }, 300);
+      }
+      loadPctEl.textContent = `${loadProgress}%`;
+    }, 80);
+
+    // ----------------------------------------------------
+    // Sound Manager Toggle Control
+    // ----------------------------------------------------
+    const musicToggleBtn = document.getElementById('music-toggle');
+    const musicOnIcon = document.getElementById('music-on-icon');
+    const musicOffIcon = document.getElementById('music-off-icon');
+
+    function updateAudioIcon(isPlaying) {
+      if (isPlaying) {
+        musicOnIcon.style.display = 'block';
+        musicOffIcon.style.display = 'none';
+      } else {
+        musicOnIcon.style.display = 'none';
+        musicOffIcon.style.display = 'block';
+      }
+    }
+
+    musicToggleBtn.addEventListener('click', (e) => {
+      const playing = synth.toggle();
+      updateAudioIcon(playing);
+      if (playing) {
+        cosmos.spawnBurst(e.clientX, e.clientY, 'sparkle', 10);
+      }
+    });
+
+    // ----------------------------------------------------
+    // Enter Universe Navigation
+    // ----------------------------------------------------
+    const btnEnter = document.getElementById('btn-enter-universe');
+    const appInterface = document.getElementById('app-interface');
+
+    btnEnter.addEventListener('click', () => {
+      synth.start();
+      updateAudioIcon(true);
+      
+      landingScreen.style.opacity = '0';
+      setTimeout(() => {
+        landingScreen.style.display = 'none';
+        appInterface.classList.add('active');
+        startTimerCountups();
+      }, 1000);
+    });
+
+    // ----------------------------------------------------
+    // Live Countdown and Duration Counters
+    // ----------------------------------------------------
+    const startDate = new Date('2026-06-16T12:00:00');
+    // Friday, July 3, 2026 at 18:00:00 is the start of the weekend
+    const weekendStart = new Date('2026-07-03T18:00:00');
+    // Sunday, July 5, 2026 at 23:59:59 is the end of the weekend
+    const weekendEnd = new Date('2026-07-05T23:59:59');
+
+    function getWeekendTarget() {
+      const now = new Date();
+      if (now < weekendStart) {
+        return { date: weekendStart, status: 'starts' };
+      } else if (now >= weekendStart && now <= weekendEnd) {
+        return { date: weekendEnd, status: 'ends' };
+      } else {
+        // Fallback for future weeks (rolls over dynamically)
+        const nextSun = new Date(now);
+        nextSun.setDate(now.getDate() + (7 - now.getDay()) % 7);
+        nextSun.setHours(23, 59, 59, 999);
+        return { date: nextSun, status: 'ends' };
+      }
+    }
+
+    function updateCounters() {
+      const now = new Date();
+      
+      // Time Elapsed Since June 16, 2026
+      const elapsedMs = now - startDate;
+      const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
+      const elapsedHrs = Math.floor((elapsedMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const elapsedMins = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
+      const elapsedSecs = Math.floor((elapsedMs % (1000 * 60)) / 1000);
+      
+      const pad = (num) => String(num).padStart(2, '0');
+      
+      document.getElementById('global-counter').innerHTML = 
+        `<span class="duration-number">${pad(elapsedDays)}d</span> ` +
+        `<span class="duration-number">${pad(elapsedHrs)}h</span> ` +
+        `<span class="duration-number">${pad(elapsedMins)}m</span> ` +
+        `<span class="duration-number">${pad(elapsedSecs)}s</span>`;
+
+      // Live Timer Countdown to Start or End of Weekend
+      const targetInfo = getWeekendTarget();
+      const weekendTarget = targetInfo.date;
+      const statusType = targetInfo.status;
+
+      let remainingMs = weekendTarget - now;
+      if (remainingMs < 0) remainingMs = 0;
+
+      const remDays = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+      const remHrs = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const remMins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const remSecs = Math.floor((remainingMs % (1000 * 60)) / 1000);
+
+      document.getElementById('wk-days').textContent = pad(remDays);
+      document.getElementById('wk-hours').textContent = pad(remHrs);
+      document.getElementById('wk-mins').textContent = pad(remMins);
+      document.getElementById('wk-secs').textContent = pad(remSecs);
+
+      // Update labels dynamically based on status
+      const timerStatusEl = document.getElementById('timer-status-label');
+      if (timerStatusEl) {
+        if (statusType === 'starts') {
+          timerStatusEl.textContent = "Until Weekend Adventure Starts";
+        } else {
+          timerStatusEl.textContent = "Until Weekend Adventure Ends";
+        }
+      }
+      
+      // Update Connection modal report status dynamically
+      const reportStatusEl = document.getElementById('mission-report-weekend-status');
+      if (reportStatusEl) {
+        if (now < weekendStart) {
+          reportStatusEl.textContent = "Scheduled ⏳";
+          reportStatusEl.style.color = "var(--color-gold)";
+        } else if (now >= weekendStart && now <= weekendEnd) {
+          reportStatusEl.textContent = "In Progress ⚡";
+          reportStatusEl.style.color = "var(--color-cyan)";
+        } else {
+          reportStatusEl.textContent = "COMPLETED ✅";
+          reportStatusEl.style.color = "var(--color-green)";
+        }
+      }
+    }
+
+    function setupDynamicTimeline() {
+      const now = new Date();
+      const timelineContainer = document.getElementById('dynamic-timeline-elements');
+      if (!timelineContainer) return;
+      
+      const firstDateObj = new Date('2026-06-30T12:00:00');
+      const diffTime = now - firstDateObj;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      let firstDateLabel = "June 30";
+      if (diffDays === 0) {
+        firstDateLabel = "Today";
+      } else if (diffDays === 1) {
+        firstDateLabel = "Yesterday";
+      } else if (diffDays > 1 && diffDays < 7) {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        firstDateLabel = days[firstDateObj.getDay()];
+      }
+      
+      let html = '';
+      
+      // First Date Item
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-date">${firstDateLabel}</div>
+          <div class="timeline-content-card" style="background: rgba(255, 64, 129, 0.05); border-color: rgba(255, 64, 129, 0.2);">
+            <h4 class="timeline-title" style="color: var(--color-pink);">First Date (Reality > Expectations) 🌅</h4>
+            <p class="timeline-desc">Meeting in person at last. An entire day filled with laughter, deep conversations, and chemistry that proved 100% real. The universe clicked.</p>
+          </div>
+        </div>
+      `;
+      
+      if (now < weekendStart) {
+        // Today is mid-week (e.g. Wednesday July 1st)
+        html += `
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">Today</div>
+            <div class="timeline-content-card" style="background: rgba(170, 0, 255, 0.05); border-color: rgba(170, 0, 255, 0.2);">
+              <h4 class="timeline-title" style="color: var(--color-purple);">Anticipation & Countdown 💫</h4>
+              <p class="timeline-desc">One amazing date yesterday wasn't enough. We are in orbit, counting down the hours and sharing stories until the weekend adventure begins.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">This Weekend</div>
+            <div class="timeline-content-card" style="background: rgba(0, 229, 255, 0.05); border-color: rgba(0, 229, 255, 0.2);">
+              <h4 class="timeline-title" style="color: var(--color-cyan);">Weekend Adventure 🚀</h4>
+              <p class="timeline-desc">Because one day wasn't enough. We are spending this weekend writing new chapters, exploring side-by-side, and making more memories.</p>
+            </div>
+          </div>
+        `;
+      } else if (now >= weekendStart && now <= weekendEnd) {
+        // Active Weekend!
+        html += `
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">Today</div>
+            <div class="timeline-content-card" style="background: rgba(0, 229, 255, 0.05); border-color: rgba(0, 229, 255, 0.2);">
+              <h4 class="timeline-title" style="color: var(--color-cyan);">Weekend Adventure 🚀</h4>
+              <p class="timeline-desc">Because one day wasn't enough. We are spending this weekend writing new chapters, exploring side-by-side, and making more memories. Mission in progress.</p>
+            </div>
+          </div>
+        `;
+      } else {
+        // After Weekend
+        html += `
+          <div class="timeline-item">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-date">July 3–5</div>
+            <div class="timeline-content-card" style="background: rgba(0, 230, 118, 0.05); border-color: rgba(0, 230, 118, 0.2);">
+              <h4 class="timeline-title" style="color: var(--color-green);">Weekend Adventure 🚀</h4>
+              <p class="timeline-desc">Mission accomplished. One amazing day turned into a weekend of writing new chapters, exploring side-by-side, and making unforgettable memories.</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      timelineContainer.innerHTML = html;
+    }
+
+    function startTimerCountups() {
+      updateCounters();
+      setInterval(updateCounters, 1000);
+      setupDynamicTimeline();
+    }
+
+    // ----------------------------------------------------
+    // Main Orbit Navigation, Modals & Visited Tracking
+    // ----------------------------------------------------
+    const planets = document.querySelectorAll('.planet');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalCards = document.querySelectorAll('.modal-card');
+    
+    const visitedSections = {
+      special: false,
+      ai: false,
+      timeline: false,
+      gallery: false,
+      future: false,
+      compatibility: false
+    };
+
+    function checkMissionUnlock() {
+      const allVisited = Object.values(visitedSections).every(val => val === true);
+      const reportPlanet = document.getElementById('report-planet');
+      
+      if (allVisited && !reportPlanet.classList.contains('unlocked')) {
+        reportPlanet.classList.add('unlocked');
+        
+        const rect = reportPlanet.getBoundingClientRect();
+        cosmos.spawnBurst(rect.left + rect.width/2, rect.top + rect.height/2, 'heart', 30);
+        synth.playChime();
+        
+        document.getElementById('mission-locked-view').style.display = 'none';
+        document.getElementById('mission-unlocked-view').style.display = 'block';
+      }
+      
+      const count = Object.values(visitedSections).filter(Boolean).length;
+      document.getElementById('mission-lock-text').textContent = 
+        `Marsden, you must explore all other sectors of Our Universe first. Visited: ${count}/6`;
+    }
+
+    planets.forEach(planet => {
+      planet.addEventListener('click', (e) => {
+        const section = planet.getAttribute('data-section');
+        synth.playClick();
+        
+        if (section === 'report' && !planet.classList.contains('unlocked')) {
+          planet.classList.add('error-shaking');
+          cosmos.spawnBurst(e.clientX, e.clientY, 'sparkle', 8);
+          setTimeout(() => planet.classList.remove('error-shaking'), 500);
+          
+          openModal('report');
+          return;
+        }
+
+        openModal(section);
+        
+        if (section !== 'report' && !visitedSections[section]) {
+          visitedSections[section] = true;
+          planet.classList.add('visited');
+          checkMissionUnlock();
+        }
+      });
+    });
+
+    function openModal(section) {
+      // Pause Background Starfield to avoid layout-blur lag on animation!
+      cosmos.pause();
+      
+      modalOverlay.classList.add('active');
+      modalCards.forEach(card => {
+        if (card.getAttribute('data-section') === section) {
+          card.style.display = 'flex';
+          
+          if (section === 'timeline') {
+            setTimeout(() => {
+              const items = card.querySelectorAll('.timeline-item');
+              items.forEach((item, idx) => {
+                setTimeout(() => item.classList.add('active'), idx * 150);
+              });
+            }, 50);
+          }
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      synth.playClick();
+      
+      // Unpause Background Starfield now that modal is closed!
+      cosmos.unpause();
+      
+      document.querySelectorAll('.timeline-item').forEach(item => item.classList.remove('active'));
+    }
+
+    document.querySelectorAll('.modal-close').forEach(btn => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // ----------------------------------------------------
+    // Section detail: Interactive Constellation (Special)
+    // ----------------------------------------------------
+    const constellationStars = document.querySelectorAll('.const-star');
+    const constellationLines = document.querySelectorAll('.const-line');
+    const listItems = document.querySelectorAll('.special-item');
+    const displayCard = document.getElementById('special-text-display');
+
+    const specialFacts = [
+      "You make conversations effortless. Talking to you flows like a river under the starlight.",
+      "You genuinely enjoy reading and learning. Your curious mind is one of the brightest spots in this universe.",
+      "You love swimming. Water seems like your natural element, fluid and beautiful.",
+      "Your movie recommendations are surprisingly good. You have excellent cinematic vision.",
+      "You somehow made me look forward to checking my phone. A vibration now brings a smile.",
+      "You love cuddles, which is obviously excellent judgment and extremely high-value chemistry.",
+      "You make ordinary days feel exciting. Having you in my orbit makes every moment shine."
+    ];
+
+    function activateSpecialStar(idx) {
+      constellationStars.forEach((star, sIdx) => {
+        if (sIdx === idx) {
+          star.classList.add('active');
+        } else {
+          star.classList.remove('active');
+        }
+      });
+
+      listItems.forEach((item, iIdx) => {
+        if (iIdx === idx) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      constellationLines.forEach(line => {
+        const idParts = line.id.split('-');
+        if (idParts.includes(String(idx))) {
+          line.classList.add('active');
+        } else {
+          line.classList.remove('active');
+        }
+      });
+
+      displayCard.innerHTML = `<span>${specialFacts[idx]}</span>`;
+      synth.playClick();
+    }
+
+    constellationStars.forEach(star => {
+      star.addEventListener('click', () => {
+        const idx = parseInt(star.getAttribute('data-index'));
+        activateSpecialStar(idx);
+        
+        const rect = star.getBoundingClientRect();
+        cosmos.spawnBurst(rect.left + rect.width/2, rect.top + rect.height/2, 'sparkle', 8);
+      });
+    });
+
+    listItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const idx = parseInt(item.getAttribute('data-index'));
+        activateSpecialStar(idx);
+      });
+    });
+
+    // CSS shaking keyframe helper
+    document.head.insertAdjacentHTML('beforeend', `
+      <style>
+        .error-shaking {
+          animation: shake 0.4s ease !important;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translate3d(0,0,0) rotate(calc(-1 * var(--angle))) scale(1); }
+          20%, 60% { transform: translate3d(-6px, 0, 0) rotate(calc(-1 * var(--angle))) scale(0.96); }
+          40%, 80% { transform: translate3d(6px, 0, 0) rotate(calc(-1 * var(--angle))) scale(1.04); }
+        }
+      </style>
+    `);
+
+    // ----------------------------------------------------
+    // Section detail: AI Companion chatbot
+    // ----------------------------------------------------
+    const chatUserIn = document.getElementById('chat-user-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatBox = document.getElementById('chat-box');
+    const quickPrompts = document.querySelectorAll('.chat-suggest-btn');
+
+    function appendMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.classList.add('chat-message', sender);
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return msg;
+    }
+
+    function getAIResponse(input) {
+      const text = input.toLowerCase().trim();
+      
+      if (text.includes("beatrice")) {
+        return "Beatrice is absolutely amazing! She loves swimming, reading books, watching movies, and cuddling (which Marsden thinks is excellent judgment). She has an amazing smile that makes Marsden genuinely happy. 😊💖";
+      }
+      if (text.includes("text") || text.includes("start") || text.includes("june 16") || text.includes("contact")) {
+        return "Marsden and Beatrice started texting on June 16! That same day, they shared their very first phone call, launching their shared orbit. 📱💬";
+      }
+      if (text.includes("phone") || text.includes("call") || text.includes("june 21")) {
+        if (text.includes("21") || text.includes("long") || text.includes("meaningful")) {
+          return "On June 21, they had their first long meaningful phone call. Talking for hours felt completely effortless. 📞✨";
+        }
+        return "Their first phone call happened on June 16, the very day they started texting! Later, on June 21, they shared their first long meaningful phone call. Talk about stellar connection! 📞⚡";
+      }
+      if (text.includes("photo") || text.includes("flirt") || text.includes("saturday")) {
+        return "On Saturday, they shared their first photos and started flirting! The chemistry was undeniable from the start. 📸🥰";
+      }
+      if (text.includes("yesterday") || text.includes("date") || text.includes("meet")) {
+        return "Yesterday, they met in person for the very first time! They spent the entire day laughing, talking, and creating unforgettable memories. Marsden says reality exceeded all expectations. 🥰🌅";
+      }
+      if (text.includes("weekend") || text.includes("today") || text.includes("tomorrow")) {
+        return "They are spending this weekend together! One amazing day wasn't enough, so they are turning it into a full weekend adventure to build even more memories. 🚀🎒";
+      }
+      if (text.includes("secret") || text.includes("easter") || text.includes("egg") || text.includes("polaris")) {
+        return "Psst! Have you checked out the Polaris star in the top-right corner? Try tapping it 5 times... I hear it contains a direct letter from Marsden. 🤫✨";
+      }
+      if (text.includes("smile") || text.includes("happy")) {
+        return "Beatrice has a stunning smile. Making her smile makes Marsden genuinely happy. He likes her very much! 😊❤️";
+      }
+      if (text.includes("swim") || text.includes("read") || text.includes("movie") || text.includes("cuddle")) {
+        return "Beatrice loves swimming, reading books, watching movies, and cuddling. Marsden is excited to do all of these together on their upcoming bucket list adventures! 🏊‍♀️📚🎬🤗";
+      }
+      if (text.includes("hello") || text.includes("hi") || text.includes("hey")) {
+        return "Hello! I am your Cosmic Companion. Ask me about Beatrice, their first date, June 16, Saturday, or this weekend! 🌌";
+      }
+      return "My databanks are searching... I couldn't find a direct match. Try asking about 'Beatrice', 'June 16', 'Saturday', 'yesterday', or 'cuddles'! 💫";
+    }
+
+    function handleChatSubmit() {
+      const text = chatUserIn.value.trim();
+      if (!text) return;
+      
+      appendMessage(text, 'user');
+      chatUserIn.value = '';
+      synth.playClick();
+      
+      const typingIndicator = appendMessage('', 'ai');
+      typingIndicator.innerHTML = '<span class="typing-caret"></span>';
+      
+      setTimeout(() => {
+        const reply = getAIResponse(text);
+        typingIndicator.textContent = '';
+        
+        let idx = 0;
+        const interval = setInterval(() => {
+          typingIndicator.textContent = reply.substring(0, idx) + '█';
+          idx++;
+          
+          // Optimize scroll: only scroll every 3 characters or at the end to prevent layout thrashing
+          if (idx % 3 === 0 || idx > reply.length) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+          
+          if (idx > reply.length) {
+            clearInterval(interval);
+            typingIndicator.textContent = reply;
+          }
+        }, 35);
+      }, 500);
+    }
+
+    chatSendBtn.addEventListener('click', handleChatSubmit);
+    chatUserIn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleChatSubmit();
+    });
+
+    quickPrompts.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const query = btn.getAttribute('data-query');
+        chatUserIn.value = query;
+        handleChatSubmit();
+      });
+    });
+
+    // ----------------------------------------------------
+    // Section detail: Memory Gallery Lightbox
+    // ----------------------------------------------------
+    const galleryCards = document.querySelectorAll('.gallery-card');
+    const lightboxOverlay = document.getElementById('lightbox-overlay');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.querySelector('.lightbox-close');
+    const prevBtn = document.querySelector('.lightbox-nav.prev');
+    const nextBtn = document.querySelector('.lightbox-nav.next');
+
+    let currentPhotoIdx = 0;
+    const galleryData = [
+      { src: './assets/first_hug.jpg', caption: '❤️ First Hug – A warm, magical hold that melted away all distance.' },
+      { src: './assets/laughing_together.jpg', caption: "😂 That moment we couldn't stop laughing – Joy in its purest, cosmic form." },
+      { src: './assets/favorite_conversation.jpg', caption: '☕ Our favorite conversation – Hours of sharing stories under a virtual sky.' },
+      { src: './assets/unforgettable_day.jpg', caption: '🌅 One unforgettable day – Walking together, watching our worlds sync in person.' }
+    ];
+
+    function showLightbox(idx) {
+      currentPhotoIdx = idx;
+      lightboxImg.src = galleryData[idx].src;
+      lightboxCaption.textContent = galleryData[idx].caption;
+      lightboxOverlay.classList.add('active');
+      synth.playClick();
+    }
+
+    galleryCards.forEach((card, idx) => {
+      card.addEventListener('click', () => {
+        showLightbox(idx);
+      });
+    });
+
+    lightboxClose.addEventListener('click', () => {
+      lightboxOverlay.classList.remove('active');
+      synth.playClick();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      currentPhotoIdx = (currentPhotoIdx - 1 + galleryData.length) % galleryData.length;
+      showLightbox(currentPhotoIdx);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentPhotoIdx = (currentPhotoIdx + 1) % galleryData.length;
+      showLightbox(currentPhotoIdx);
+    });
+
+    // ----------------------------------------------------
+    // Section detail: Future Adventures (Bucket List)
+    // ----------------------------------------------------
+    const bucketItems = document.querySelectorAll('.bucket-item');
+
+    bucketItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        item.classList.toggle('checked');
+        synth.playClick();
+        
+        if (item.classList.contains('checked')) {
+          cosmos.spawnBurst(e.clientX, e.clientY, 'heart', 15);
+        } else {
+          cosmos.spawnBurst(e.clientX, e.clientY, 'sparkle', 8);
+        }
+      });
+    });
+
+    // ----------------------------------------------------
+    // Section detail: Compatibility Analyzer Scanner
+    // ----------------------------------------------------
+    const runScanBtn = document.getElementById('run-scan-btn');
+    const scannerBox = document.getElementById('scanner-box');
+    const scanLogs = document.getElementById('scan-logs');
+    const scanResults = document.getElementById('scan-results');
+
+    const logTexts = [
+      "[INFO] Initializing Heart-Sync Protocol v1.4...",
+      "[INFO] Resolving coordinates for Marsden & Beatrice...",
+      "[INFO] Syncing interest data: Swimming, Books, Cuddles, Movies...",
+      "[INFO] Analyzing conversation flows: texting June 16, calling June 16...",
+      "[INFO] Calculating phone call endurance metrics... (100% capacity)",
+      "[INFO] Assessing flirting levels from Saturday... (Extreme overload)",
+      "[INFO] Calibrating real-life date chemistry: YESTERDAY... verified.",
+      "[SUCCESS] Compatibility index calculated."
+    ];
+
+    runScanBtn.addEventListener('click', () => {
+      runScanBtn.style.display = 'none';
+      scannerBox.classList.add('scanner-active');
+      synth.playClick();
+      
+      let logIdx = 0;
+      function printNextLog() {
+        if (logIdx < logTexts.length) {
+          const log = document.createElement('div');
+          log.textContent = logTexts[logIdx];
+          scanLogs.appendChild(log);
+          scanLogs.scrollTop = scanLogs.scrollHeight;
+          logIdx++;
+          setTimeout(printNextLog, 300);
+        } else {
+          setTimeout(() => {
+            scannerBox.classList.remove('scanner-active');
+            scanLogs.style.display = 'none';
+            scanResults.style.display = 'block';
+            synth.playChime();
+            animateProgressBars();
+          }, 500);
+        }
+      }
+      printNextLog();
+    });
+
+    function animateProgressBars() {
+      const fills = document.querySelectorAll('.stat-bar-fill');
+      const vals = document.querySelectorAll('.stat-labels .val');
+      
+      fills.forEach((fill, idx) => {
+        const valEl = vals[idx];
+        const target = parseFloat(valEl.getAttribute('data-target'));
+        const decimals = parseInt(valEl.getAttribute('data-decimals') || '0');
+        const suffix = valEl.getAttribute('data-suffix') || '%';
+        
+        setTimeout(() => {
+          fill.style.width = (target === 99 ? 100 : target) + '%';
+        }, 80);
+        
+        let current = 0;
+        const speed = target / 35;
+        const counter = setInterval(() => {
+          current += speed;
+          if (current >= target) {
+            current = target;
+            clearInterval(counter);
+          }
+          valEl.textContent = current.toFixed(decimals) + suffix;
+        }, 25);
+      });
+    }
+
+    // ----------------------------------------------------
+    // Secret Easter Egg & Handwritten Letter (5x Polaris Tap)
+    // ----------------------------------------------------
+    const polarisStar = document.getElementById('polaris-star');
+    const envelopeModal = document.getElementById('envelope-modal');
+    const envelopeSvg = document.getElementById('envelope-svg');
+    const envelopeFlap = document.getElementById('envelope-flap');
+    const waxSeal = document.getElementById('wax-seal');
+    const letterPaper = document.getElementById('letter-paper');
+    const letterCloseBtn = document.getElementById('letter-close-btn');
+
+    let polarisClicks = 0;
+
+    polarisStar.addEventListener('click', (e) => {
+      polarisClicks++;
+      synth.playClick();
+      cosmos.spawnBurst(e.clientX, e.clientY, 'sparkle', 8);
+
+      if (polarisClicks >= 5) {
+        polarisClicks = 0;
+        triggerEasterEgg();
+      }
+    });
+
+    function triggerEasterEgg() {
+      synth.playChime();
+      const rect = polarisStar.getBoundingClientRect();
+      cosmos.spawnBurst(rect.left + rect.width/2, rect.top + rect.height/2, 'heart', 35);
+
+      envelopeModal.classList.add('active');
+      envelopeFlap.setAttribute('d', 'M 0,100 L 300,280 L 600,100 Z');
+      waxSeal.style.display = 'block';
+      letterPaper.classList.remove('active');
+      envelopeSvg.style.display = 'block';
+    }
+
+    waxSeal.addEventListener('click', (e) => {
+      e.stopPropagation();
+      synth.playChime();
+      cosmos.spawnBurst(e.clientX, e.clientY, 'heart', 15);
+      
+      waxSeal.style.display = 'none';
+      envelopeFlap.setAttribute('d', 'M 0,100 L 300,0 L 600,100 Z');
+      
+      setTimeout(() => {
+        envelopeSvg.style.display = 'none';
+        letterPaper.classList.add('active');
+      }, 500);
+    });
+
+    function closeLetter() {
+      envelopeModal.classList.remove('active');
+      letterPaper.classList.remove('active');
+      synth.playClick();
+    }
+
+    letterCloseBtn.addEventListener('click', closeLetter);
+    envelopeModal.addEventListener('click', (e) => {
+      if (e.target === envelopeModal) {
+        closeLetter();
+      }
+    });
+  </script>
+</body>
+</html>

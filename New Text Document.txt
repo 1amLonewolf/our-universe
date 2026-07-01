@@ -1,0 +1,121 @@
+Create a premium single-page HTML website called "Our Universe" using only HTML, CSS, and JavaScript in one self-contained HTML file (no frameworks or external libraries).
+
+The website is a personalized interactive love story for Marsden ❤️ Beatrice. Use their names throughout the site. The experience should feel cinematic, magical, elegant, and modern, like an Apple product page mixed with an award-winning interactive portfolio. Prioritize a fluid, lightweight, responsive experience with smooth 60 FPS animations, hardware-accelerated CSS transforms, mobile-first design, glassmorphism, animated stars, nebula gradients, floating particles, subtle parallax, glowing effects, and seamless transitions.
+
+Landing Page
+
+Display "Welcome to Our Universe" with the subtitle "Every star tells a story. Ours started with a single message." Include an animated loading screen and a glowing Enter Our Universe button that transitions into the experience.
+
+Main Navigation
+
+Create floating planets for:
+
+- ❤️ Why You're Special
+- 🤖 AI Companion
+- 📖 Our Timeline
+- 📸 Memory Gallery
+- 🚀 Future Adventures
+- 💞 Compatibility Analyzer
+- 🔒 Mission Report
+
+Why You're Special
+
+Create an interactive constellation where each glowing star reveals:
+
+- You make conversations effortless.
+- You genuinely enjoy reading and learning.
+- You love swimming.
+- Your movie recommendations are surprisingly good.
+- You somehow made me look forward to checking my phone.
+- You love cuddles, which is obviously excellent judgment.
+- You make ordinary days feel exciting.
+
+AI Companion
+
+Build a futuristic chatbot with typing animations that knows:
+
+- Beatrice enjoys swimming, reading books, watching movies, and cuddling.
+- Marsden and Beatrice started texting on June 16.
+- Their first phone call was on June 16.
+- They shared their first photos and started flirting on Saturday.
+- Their first long meaningful phone call was on June 21.
+- They met in person yesterday and spent the entire day together laughing, talking, and making unforgettable memories.
+- They are spending this weekend together.
+- Beatrice has an amazing smile, makes Marsden genuinely happy, and likes him.
+
+Timeline
+
+Create a beautiful animated timeline:
+
+- June 16 – Started texting.
+- June 16 – First phone call.
+- Saturday – Shared first photos.
+- Saturday – Flirting began.
+- June 21 – First long meaningful phone call.
+- Yesterday – First date. They spent the entire day together, and reality exceeded expectations.
+- Today – Weekend adventure. One amazing day wasn't enough, so they're spending the weekend together creating even more memories.
+
+Weekend Adventure
+
+Show a live countdown until the end of the weekend and a second live timer showing how long it's been since June 16.
+
+Memory Gallery
+
+Create elegant image placeholders with captions:
+
+- ❤️ First hug
+- 😂 That moment we couldn't stop laughing
+- ☕ Our favorite conversation
+- 🌅 One unforgettable day
+
+Future Adventures
+
+Animated bucket list:
+
+- Go swimming together
+- Movie marathon
+- Read books together
+- Watch a sunset
+- Try a new restaurant
+- Make more unforgettable memories
+- Keep making each other smile
+
+Compatibility Analyzer
+
+Create a futuristic AI scan with animated progress bars. Show:
+
+- Communication: 97%
+- Shared Interests: 92%
+- Phone Call Endurance: 100%
+- Flirting Potential: 100%
+- Weekend Excitement: 100%
+- Real-Life Chemistry: VERIFIED
+- Overall Compatibility: 99.999%
+
+End with:
+"She wasn't just the right swipe... she became the right person to spend my time with."
+
+Mission Report
+
+Keep this section locked until all others are visited.
+
+Display:
+
+- Initial Contact: ✅
+- First Phone Call: ✅
+- First Date: ✅
+- Connection: Growing Stronger Every Day
+- Weekend Mission: In Progress
+- Future Adventures: Loading...
+
+Final message:
+
+"Some people spend years searching for someone who feels like home. I feel lucky our paths crossed on June 16. Yesterday became one of my favorite memories, and I think we're only getting started. Of all the stars in this universe, you're still my favorite discovery."
+
+Secret Easter Egg
+
+Hide a secret interaction (e.g., clicking a glowing star five times) that unlocks a handwritten letter from Marsden to Beatrice thanking her for making ordinary days extraordinary and expressing excitement for many more adventures together.
+
+Technical Requirements
+
+Everything must be contained in one HTML file. Write clean, production-quality code. Optimize for performance, responsiveness, accessibility, and touch interactions. Use smooth scrolling, elegant animations, subtle sound/music toggles, and create an experience that feels emotional, polished, fluid, and memorable rather than like a traditional website.
