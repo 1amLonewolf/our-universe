@@ -1934,9 +1934,9 @@
       }
       
       .dashboard-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
         height: auto;
         overflow: visible;
       }
@@ -1957,11 +1957,17 @@
       .orbit-container {
         order: 1;
         width: 100%;
-        height: auto;
         min-height: 320px;
-        padding: 8px 0 4px;
+        padding: 4px 0 8px;
         margin-top: 0;
         z-index: 4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(6, 6, 15, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
       }
     }
 
@@ -1992,18 +1998,20 @@
         gap: 14px;
         width: 100%;
         overflow-x: auto;
-        padding: 10px 0;
+        padding: 12px 0;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
+        align-items: center;
+        justify-content: flex-start;
       }
       .sun {
         display: none;
       }
       .orbit-container {
-        display: block;
+        display: flex;
         width: 100%;
         height: auto;
-        padding: 0 0 8px;
+        padding: 8px 6px 12px;
         margin-top: 0;
       }
       .planet-wrapper {
