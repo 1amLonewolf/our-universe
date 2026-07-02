@@ -1131,13 +1131,23 @@
       return arr;
     }
 
+    function formatMessageAsHTML(message) {
+      return String(message)
+        .trim()
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+        .map((paragraph) => `<p>${paragraph}</p>`)
+        .join('');
+    }
+
     async function loadDailyMessages() {
       try {
         const response = await fetch('assets/love-messages.json');
         if (!response.ok) throw new Error('Failed to fetch love messages');
         const data = await response.json();
         if (Array.isArray(data) && data.length) {
-          dailyMessages = data.filter(Boolean);
+          dailyMessages = data.map(String).filter(Boolean);
         }
       } catch (err) {
         dailyMessages = [];
@@ -1187,10 +1197,10 @@
 
           const dayIndex = displayDayCount - startDay;
           const pick = order[((dayIndex % order.length) + order.length) % order.length];
-          dailyLetterMessage.textContent = dailyMessages[pick];
+          dailyLetterMessage.innerHTML = formatMessageAsHTML(dailyMessages[pick]);
         } catch (err) {
           const daySeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-          dailyLetterMessage.textContent = dailyMessages[daySeed % dailyMessages.length];
+          dailyLetterMessage.innerHTML = formatMessageAsHTML(dailyMessages[daySeed % dailyMessages.length]);
         }
       }
     }
