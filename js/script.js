@@ -1157,16 +1157,35 @@
           const startKey = 'our_universe_daily_start_v1';
           let order = JSON.parse(localStorage.getItem(storageKey) || 'null');
 
+          function getLocalMidnightDayCount(date = new Date()) {
+            const localMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+            return Math.floor(localMidnight.getTime() / (1000 * 60 * 60 * 24));
+          }
+
+          const todayCount = getLocalMidnightDayCount();
+
           // If stored order is missing or length changed, create a new shuffled order
           if (!Array.isArray(order) || order.length !== dailyMessages.length) {
             order = Array.from({ length: dailyMessages.length }, (_, i) => i);
             shuffleArray(order);
             localStorage.setItem(storageKey, JSON.stringify(order));
-            localStorage.setItem(startKey, String(Math.floor(Date.now() / (1000 * 60 * 60 * 24))));
+            localStorage.setItem(startKey, String(todayCount));
           }
 
           const startDay = parseInt(localStorage.getItem(startKey) || '0', 10);
-          const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) - startDay;
+          const forceKey = 'our_universe_daily_force_advanced_v1';
+          const forceDay = parseInt(localStorage.getItem(forceKey) || 'NaN', 10);
+          let displayDayCount = todayCount;
+
+          // If we haven't forced a refresh for today yet, advance to the next message immediately.
+          if (!Number.isNaN(forceDay) && forceDay === todayCount) {
+            displayDayCount = todayCount + 1;
+          } else if (Number.isNaN(forceDay) || forceDay !== todayCount) {
+            localStorage.setItem(forceKey, String(todayCount));
+            displayDayCount = todayCount + 1;
+          }
+
+          const dayIndex = displayDayCount - startDay;
           const pick = order[((dayIndex % order.length) + order.length) % order.length];
           dailyLetterMessage.textContent = dailyMessages[pick];
         } catch (err) {
@@ -1176,7 +1195,14 @@
       }
     }
 
-    loadDailyMessages();
+    loadDailyMessages().then(() => {
+      const now = new Date();
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 10, 0);
+      const delay = nextMidnight.getTime() - now.getTime();
+      setTimeout(() => {
+        loadDailyMessages();
+      }, delay);
+    });
 
     let polarisClicks = 0;
 
