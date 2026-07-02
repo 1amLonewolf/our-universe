@@ -1132,13 +1132,37 @@
     }
 
     function formatMessageAsHTML(message) {
-      return String(message)
-        .trim()
+      const text = String(message).trim();
+      if (!text) return '';
+
+      const explicitParagraphs = text
         .split(/\n{2,}/)
         .map((paragraph) => paragraph.trim())
-        .filter(Boolean)
-        .map((paragraph) => `<p>${paragraph}</p>`)
-        .join('');
+        .filter(Boolean);
+
+      if (explicitParagraphs.length > 1) {
+        return explicitParagraphs
+          .map((paragraph) => `<p>${paragraph.replace(/\n+/g, ' ')}</p>`)
+          .join('');
+      }
+
+      const sentences = text.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [text];
+      if (sentences.length > 1) {
+        const paragraphs = [];
+        let current = '';
+
+        sentences.forEach((sentence, index) => {
+          current += sentence.trim() + ' ';
+          if ((index + 1) % 2 === 0 || index === sentences.length - 1) {
+            paragraphs.push(current.trim());
+            current = '';
+          }
+        });
+
+        return paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('');
+      }
+
+      return `<p>${text.replace(/\n+/g, ' ')}</p>`;
     }
 
     async function loadDailyMessages() {
@@ -1183,15 +1207,18 @@
           }
 
           const startDay = parseInt(localStorage.getItem(startKey) || '0', 10);
-          const forceKey = 'our_universe_daily_force_advanced_v1';
-          const forceDay = parseInt(localStorage.getItem(forceKey) || 'NaN', 10);
+          const deployKey = 'our_universe_daily_deploy_override_v1';
+          const deployDay = parseInt(localStorage.getItem(deployKey) || 'NaN', 10);
           let displayDayCount = todayCount;
 
-          // If we haven't forced a refresh for today yet, advance to the next message immediately.
-          if (!Number.isNaN(forceDay) && forceDay === todayCount) {
-            displayDayCount = todayCount + 1;
-          } else if (Number.isNaN(forceDay) || forceDay !== todayCount) {
-            localStorage.setItem(forceKey, String(todayCount));
+          // Change the message immediately only once for this deployment,
+          // then allow future day changes to happen at midnight as usual.
+          if (Number.isNaN(deployDay) || deployDay !== todayCount) {
+            if (Number.isNaN(deployDay)) {
+              displayDayCount = todayCount + 1;
+              localStorage.setItem(deployKey, String(todayCount));
+            }
+          } else if (deployDay === todayCount) {
             displayDayCount = todayCount + 1;
           }
 
