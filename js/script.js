@@ -439,6 +439,15 @@
     const musicOffIcon = document.getElementById('music-off-icon');
     const backgroundAudio = document.getElementById('background-audio');
 
+    // Ensure audio is ready and properly loaded
+    backgroundAudio.addEventListener('canplay', () => {
+      console.log('Audio loaded and ready to play');
+    });
+
+    backgroundAudio.addEventListener('error', (e) => {
+      console.error('Audio loading error:', e, 'Source:', backgroundAudio.src);
+    });
+
     function updateAudioIcon(isPlaying) {
       if (isPlaying) {
         musicOnIcon.style.display = 'block';
@@ -454,7 +463,17 @@
 
       if (backgroundAudio.paused) {
         backgroundAudio.volume = 0.2;
-        backgroundAudio.play().catch(() => {});
+        backgroundAudio.currentTime = 0;
+        const playPromise = backgroundAudio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('Audio playback started');
+            })
+            .catch((err) => {
+              console.error('Audio playback failed:', err);
+            });
+        }
         return true;
       }
 
