@@ -437,6 +437,7 @@
     const musicToggleBtn = document.getElementById('music-toggle');
     const musicOnIcon = document.getElementById('music-on-icon');
     const musicOffIcon = document.getElementById('music-off-icon');
+    const backgroundAudio = document.getElementById('background-audio');
 
     function updateAudioIcon(isPlaying) {
       if (isPlaying) {
@@ -448,8 +449,21 @@
       }
     }
 
+    function toggleBackgroundAudio() {
+      if (!backgroundAudio) return false;
+
+      if (backgroundAudio.paused) {
+        backgroundAudio.volume = 0.2;
+        backgroundAudio.play().catch(() => {});
+        return true;
+      }
+
+      backgroundAudio.pause();
+      return false;
+    }
+
     musicToggleBtn.addEventListener('click', (e) => {
-      const playing = synth.toggle();
+      const playing = toggleBackgroundAudio();
       updateAudioIcon(playing);
       if (playing) {
         cosmos.spawnBurst(e.clientX, e.clientY, 'sparkle', 10);
@@ -498,7 +512,7 @@
     window.addEventListener('resize', initMobileOrbitSwipe);
 
     btnEnter.addEventListener('click', () => {
-      synth.start();
+      toggleBackgroundAudio();
       updateAudioIcon(true);
       
       landingScreen.style.opacity = '0';
