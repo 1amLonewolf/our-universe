@@ -458,28 +458,51 @@
       }
     }
 
-    function toggleBackgroundAudio() {
-      if (!backgroundAudio) return false;
-
-      if (backgroundAudio.paused) {
-        backgroundAudio.volume = 0.2;
-        backgroundAudio.currentTime = 0;
-        const playPromise = backgroundAudio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log('Audio playback started');
-            })
-            .catch((err) => {
-              console.error('Audio playback failed:', err);
-            });
-        }
-        return true;
+    function playBackgroundAudio() {
+      if (!backgroundAudio || !backgroundAudio.paused) return false;
+      backgroundAudio.volume = 0.2;
+      const playPromise = backgroundAudio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('Audio playback started');
+            updateAudioIcon(true);
+          })
+          .catch((err) => {
+            console.error('Audio playback failed:', err);
+          });
       }
+      return true;
+    }
 
+    function pauseBackgroundAudio() {
+      if (!backgroundAudio || backgroundAudio.paused) return false;
       backgroundAudio.pause();
+      updateAudioIcon(false);
       return false;
     }
+
+    function toggleBackgroundAudio() {
+      if (!backgroundAudio) return false;
+      if (backgroundAudio.paused) {
+        return playBackgroundAudio();
+      }
+      return pauseBackgroundAudio();
+    }
+
+    function initBackgroundAudioAutoplay() {
+      playBackgroundAudio();
+      document.addEventListener('click', () => {
+        if (backgroundAudio.paused) {
+          playBackgroundAudio();
+        }
+      }, { once: true, capture: true });
+    }
+
+    window.addEventListener('load', () => {
+      initBackgroundAudioAutoplay();
+      updateAudioIcon(!backgroundAudio.paused);
+    });
 
     musicToggleBtn.addEventListener('click', (e) => {
       const playing = toggleBackgroundAudio();
@@ -531,7 +554,7 @@
     window.addEventListener('resize', initMobileOrbitSwipe);
 
     btnEnter.addEventListener('click', () => {
-      toggleBackgroundAudio();
+      playBackgroundAudio();
       updateAudioIcon(true);
       
       landingScreen.style.opacity = '0';
