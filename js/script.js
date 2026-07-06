@@ -1349,4 +1349,144 @@
       }
     });
 
+    // ====================================================
+    // IMAGE GALLERY MANAGEMENT SYSTEM
+    // ====================================================
+    class GalleryManager {
+      constructor() {
+        this.storageKey = 'our_universe_user_photos';
+        this.uploads = this.loadUploads();
+        this.init();
+      }
+
+      init() {
+        const uploadForm = document.getElementById('image-upload-form');
+        const imageInput = document.getElementById('image-input');
+        const captionInput = document.getElementById('caption-input');
+        const fileName = document.getElementById('file-name');
+
+        // Handle file selection
+        imageInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            fileName.textContent = file.name;
+          }
+        });
+
+        // Handle form submission
+        uploadForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const file = imageInput.files[0];
+          const caption = captionInput.value.trim();
+
+          if (!file) {
+            alert('Please select an image');
+            return;
+          }
+
+          if (!caption) {
+            alert('Please add a caption');
+            return;
+          }
+
+          // Convert file to base64
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const imageData = event.target.result;
+            this.addUpload({
+              id: Date.now(),
+              image: imageData,
+              caption: caption,
+              date: new Date().toLocaleDateString()
+            });
+
+            // Reset form
+            uploadForm.reset();
+            fileName.textContent = 'No file selected';
+            captionInput.value = '';
+
+            // Refresh gallery display
+            this.renderUploads();
+            
+            // Play confirmation sound
+            synth.playChime();
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Initial render
+        this.renderUploads();
+      }
+
+      addUpload(upload) {
+        this.uploads.unshift(upload);
+        this.saveUploads();
+      }
+
+      deleteUpload(id) {
+        if (confirm('Delete this memory? This cannot be undone.')) {
+          this.uploads = this.uploads.filter(u => u.id !== id);
+          this.saveUploads();
+          this.renderUploads();
+          synth.playClick();
+        }
+      }
+
+      loadUploads() {
+        const stored = localStorage.getItem(this.storageKey);
+        return stored ? JSON.parse(stored) : [];
+      }
+
+      saveUploads() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.uploads));
+      }
+
+      renderUploads() {
+        const gallery = document.getElementById('memory-gallery');
+        
+        // Clear existing uploaded items
+        const existingUploads = gallery.querySelectorAll('.uploaded-gallery-item');
+        existingUploads.forEach(item => item.remove());
+
+        // Insert uploaded items after default gallery cards
+        this.uploads.forEach((upload) => {
+          const item = document.createElement('div');
+          item.className = 'trail-card uploaded-gallery-item';
+          item.innerHTML = `
+            <div class="trail-card-image">
+              <img src="${upload.image}" alt="${this.escapeHtml(upload.caption)}" />
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">${this.escapeHtml(upload.caption)}</div>
+                  <p class="trail-card-text">Saved on ${upload.date}</p>
+                </div>
+              </div>
+              <button class="btn-gallery-action delete" data-id="${upload.id}" title="Delete">Delete</button>
+            </div>
+          `;
+
+          // Add delete listener
+          const deleteBtn = item.querySelector('.btn-gallery-action.delete');
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.deleteUpload(upload.id);
+          });
+
+          gallery.appendChild(item);
+        });
+      }
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    }
+
+    // Initialize gallery manager
+    const galleryManager = new GalleryManager();
+
   

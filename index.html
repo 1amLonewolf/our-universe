@@ -384,36 +384,122 @@
         <button class="modal-close">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="gallery-grid">
-          
-          <div class="gallery-card" data-idx="0">
-            <img src="./assets/first_hug.jpg" alt="First hug">
-            <div class="gallery-card-overlay">
-              <div class="gallery-card-title">❤️ First Hug</div>
+        <!-- Upload Section -->
+        <div class="gallery-upload-section">
+          <h4 class="upload-title">✨ Add New Memory</h4>
+          <form id="image-upload-form" class="upload-form">
+            <div class="form-group">
+              <label for="image-input" class="file-input-label">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                Choose Image
+              </label>
+              <input type="file" id="image-input" accept="image/*" style="display: none;">
+              <span class="file-name" id="file-name">No file selected</span>
+            </div>
+            <div class="form-group">
+              <input type="text" id="caption-input" placeholder="Add a caption..." maxlength="100" class="form-input">
+            </div>
+            <button type="submit" class="btn-upload">Upload Memory</button>
+          </form>
+        </div>
+
+        <!-- Memory Trail -->
+        <div class="memory-trail" id="memory-gallery">
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/first_hug.jpg" alt="First hug">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">❤️ First Hug</div>
+                  <p class="trail-card-text">When time stood still and the world became ours.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">July 2026 · Our beginning</div>
             </div>
           </div>
 
-          <div class="gallery-card" data-idx="1">
-            <img src="./assets/laughing_together.jpg" alt="That moment we couldn't stop laughing">
-            <div class="gallery-card-overlay">
-              <div class="gallery-card-title">😂 Unstoppable Laughter</div>
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/laughing_together.jpg" alt="Unstoppable laughter">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">😂 Unstoppable Laughter</div>
+                  <p class="trail-card-text">The night we couldn't stop laughing, and every moment felt brighter.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">July 2026 · Joyful memories</div>
             </div>
           </div>
 
-          <div class="gallery-card" data-idx="2">
-            <img src="./assets/favorite_conversation.jpg" alt="Our favorite conversation">
-            <div class="gallery-card-overlay">
-              <div class="gallery-card-title">☕ Our Favorite Conversation</div>
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/favorite_conversation.jpg" alt="Favorite conversation">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">☕ Favorite Conversation</div>
+                  <p class="trail-card-text">Cozy talks, unexpected confessions, and the feeling of coming home.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">June 2026 · Quiet evenings</div>
             </div>
           </div>
 
-          <div class="gallery-card" data-idx="3">
-            <img src="./assets/unforgettable_day.jpg" alt="One unforgettable day">
-            <div class="gallery-card-overlay">
-              <div class="gallery-card-title">🌅 One Unforgettable Day</div>
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/unforgettable_day.jpg" alt="Unforgettable day">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">🌅 One Unforgettable Day</div>
+                  <p class="trail-card-text">A sunset, a promise, and the kind of day you want to pause forever.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">July 2026 · Sunlit memories</div>
             </div>
           </div>
 
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/my_hand.jpeg" alt="Holding hands">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">🤝 Holding Hands</div>
+                  <p class="trail-card-text">A soft reminder of how steady and warm everything feels together.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">July 2026 · Close moments</div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-card-image">
+              <img src="./assets/Smiley.jpeg" alt="Smiling together">
+            </div>
+            <div class="trail-card-content">
+              <div class="trail-card-meta">
+                <div class="trail-dot"></div>
+                <div>
+                  <div class="trail-card-title">😊 Smiling Together</div>
+                  <p class="trail-card-text">That effortless smile that makes every ordinary moment feel magical.</p>
+                </div>
+              </div>
+              <div class="trail-card-footer">July 2026 · Bright days</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
