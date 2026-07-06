@@ -1482,6 +1482,50 @@
       margin-top: 10px;
     }
 
+    .cloud-sync-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cloud-sync-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cloud-sync-row .form-input {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .cloud-sync-hint {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .cloud-sync-status {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cloud-sync-status.active {
+      color: #fff;
+      background: rgba(0, 230, 118, 0.15);
+      border-color: rgba(0, 230, 118, 0.25);
+    }
+
     .trail-card {
       display: flex;
       gap: 18px;
@@ -1510,6 +1554,23 @@
       min-width: 240px;
       overflow: hidden;
       position: relative;
+    }
+
+    .card-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      padding: 7px 10px;
+      font-size: 0.72rem;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: rgba(2, 2, 8, 0.68);
+      color: #fff;
+      border-radius: 999px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
     }
 
     .trail-card-image img {
@@ -1590,6 +1651,203 @@
     .btn-gallery-action.delete:hover {
       background: rgba(255, 64, 129, 0.35);
       border-color: rgba(255, 64, 129, 0.45);
+    }
+
+    .trail-card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      justify-content: flex-start;
+    }
+
+    .card-action-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #fff;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .card-action-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-action-btn.delete {
+      background: rgba(255, 64, 129, 0.15);
+      border: 1px solid rgba(255, 64, 129, 0.25);
+    }
+
+    .card-action-btn.delete:hover {
+      background: rgba(255, 64, 129, 0.35);
+    }
+
+    .gallery-editor-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 2, 8, 0.82);
+      backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 24px;
+    }
+
+    .gallery-editor-panel {
+      width: min(620px, 100%);
+      background: rgba(13, 11, 30, 0.97);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .gallery-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .gallery-editor-header h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .gallery-editor-close {
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .gallery-editor-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .gallery-editor-preview {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 220px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .gallery-editor-preview img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .editor-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .editor-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-family: var(--font-body);
+    }
+
+    .editor-textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .editor-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .gallery-empty-state {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 32px 20px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .gallery-preview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 2, 8, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 3500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .gallery-preview-card {
+      position: relative;
+      width: min(900px, 100%);
+      max-height: 90vh;
+      background: rgba(13, 11, 30, 0.98);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+
+    .gallery-preview-card img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+
+    .gallery-preview-body {
+      padding: 18px 20px 20px;
+    }
+
+    .gallery-preview-body h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .gallery-preview-body p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .gallery-preview-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 2;
     }
 
     @media (max-width: 860px) {
