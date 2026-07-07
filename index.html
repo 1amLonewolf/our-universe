@@ -417,6 +417,11 @@
             <div class="cloud-sync-hint">Connect Supabase to sync uploads across devices. Create a public storage bucket named memories and a table named memories.</div>
           </div>
           <button type="button" id="push-local-to-supabase-btn" class="btn-upload" style="margin-top: 12px;">Push Local Memories</button>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;">
+            <button type="button" id="export-memories-btn" class="btn-upload">Export Memories</button>
+            <label for="import-memories-input" class="btn-upload" style="cursor: pointer; display: inline-flex; justify-content: center; align-items: center;">Import Memories</label>
+            <input type="file" id="import-memories-input" accept="application/json" style="display: none;">
+          </div>
           <a href="images.html" class="btn-upload" style="display: inline-flex; justify-content: center; align-items: center; margin-top: 12px;">View Full Memory Trail</a>
         </div>
 

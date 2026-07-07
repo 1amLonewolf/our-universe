@@ -151,6 +151,7 @@
           form.reset();
           fileName.textContent = 'No file selected';
           this.renderAll();
+          this.exportMemories();
           if (window.synth && typeof window.synth.playChime === 'function') {
             window.synth.playChime();
           }
@@ -164,6 +165,8 @@
       const keyInput = document.getElementById('cloud-key-input');
       const button = document.getElementById('cloud-sync-use-btn');
       const pushButton = document.getElementById('push-local-to-supabase-btn');
+      const exportButton = document.getElementById('export-memories-btn');
+      const importInput = document.getElementById('import-memories-input');
       if (!input || !keyInput) return;
 
       const storedUrl = localStorage.getItem(this.supabaseUrlKey);
@@ -196,6 +199,39 @@
             this.disconnectSupabase();
             this.showNotification('Supabase credentials are missing.', true);
           }
+        });
+      }
+
+      if (exportButton) {
+        exportButton.addEventListener('click', () => this.exportMemories());
+      }
+
+      if (importInput) {
+        importInput.addEventListener('change', (event) => {
+          const file = event.target.files && event.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const parsed = JSON.parse(reader.result);
+              if (!Array.isArray(parsed)) throw new Error('Invalid backup format');
+              const importedEntries = parsed.filter((entry) => entry && entry.id);
+              if (!importedEntries.length) {
+                this.showNotification('No memories found in the selected file.', true);
+                return;
+              }
+              this.entries = [...importedEntries, ...this.entries.filter((entry) => entry.isDefault)];
+              this.saveEntries();
+              this.renderAll();
+              this.showNotification('Memories imported successfully.');
+            } catch (error) {
+              this.showNotification('Could not import memories.', true);
+              console.error(error);
+            } finally {
+              importInput.value = '';
+            }
+          };
+          reader.readAsText(file);
         });
       }
 
@@ -342,6 +378,48 @@
       }
     }
 
+    async saveSupabaseEntry(payload) {
+      if (!this.supabaseClient) return { error: new Error('Supabase client not ready') };
+
+      try {
+        const { error } = await this.withTimeout(
+          this.supabaseClient.from(this.supabaseTable).upsert(payload, { onConflict: 'id' })
+        );
+
+        if (!error) {
+          return { error: null };
+        }
+
+        const message = error.message || '';
+        const shouldFallback = /on conflict|unique|duplicate|constraint/i.test(message);
+        if (!shouldFallback) {
+          return { error };
+        }
+
+        const { data: existingRows, error: selectError } = await this.withTimeout(
+          this.supabaseClient.from(this.supabaseTable).select('id').eq('id', payload.id).limit(1)
+        );
+
+        if (selectError) {
+          return { error: selectError };
+        }
+
+        if (existingRows && existingRows.length) {
+          const { error: updateError } = await this.withTimeout(
+            this.supabaseClient.from(this.supabaseTable).update(payload).eq('id', payload.id)
+          );
+          return { error: updateError };
+        }
+
+        const { error: insertError } = await this.withTimeout(
+          this.supabaseClient.from(this.supabaseTable).insert(payload)
+        );
+        return { error: insertError };
+      } catch (error) {
+        return { error };
+      }
+    }
+
     async syncToSupabase(entriesOverride = null) {
       if (!this.supabaseClient) return;
       const userEntries = (entriesOverride || this.entries).filter((entry) => !entry.isDefault);
@@ -380,9 +458,10 @@
           created_at: entry.created_at || new Date().toISOString()
         };
 
-        const { error } = await this.withTimeout(this.supabaseClient.from(this.supabaseTable).upsert(payload, { onConflict: 'id' }));
+        const { error } = await this.saveSupabaseEntry(payload);
         if (error) {
-          failed.push(error.message || 'Database sync failed');
+          const message = error.message || 'Database sync failed';
+          failed.push(message);
           console.error('Supabase database write failed:', error);
         }
       }
@@ -456,6 +535,20 @@
       if (this.supabaseClient) {
         this.syncToSupabase();
       }
+    }
+
+    exportMemories() {
+      const exportPayload = JSON.stringify(this.entries, null, 2);
+      const blob = new Blob([exportPayload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'our-universe-memories.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      this.showNotification('Memories exported successfully.');
     }
 
     getRemoteUrl() {
