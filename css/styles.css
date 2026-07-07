@@ -2661,6 +2661,7 @@
         -webkit-overflow-scrolling: touch;
         align-items: center;
         justify-content: flex-start;
+        animation: none !important;
       }
       .sun {
         display: none;
@@ -2704,6 +2705,10 @@
       }
       .planet-wrapper:last-child {
         margin-right: 4px;
+      }
+
+      .sun-glow {
+        animation: none !important;
       }
       .planet-label {
         font-size: 0.95rem;

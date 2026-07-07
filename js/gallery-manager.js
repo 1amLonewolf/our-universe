@@ -67,7 +67,34 @@
       this.supabaseClient = null;
       this.supabaseBucket = 'memories';
       this.supabaseTable = 'memories';
+      this.lastSyncError = '';
       this.init();
+    }
+
+    showNotification(message, isError = false) {
+      const existing = document.getElementById('gallery-sync-notification');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'gallery-sync-notification';
+      toast.textContent = message;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '24px';
+      toast.style.right = '24px';
+      toast.style.zIndex = '5000';
+      toast.style.padding = '12px 16px';
+      toast.style.borderRadius = '999px';
+      toast.style.background = isError ? 'rgba(255, 78, 78, 0.95)' : 'rgba(0, 204, 122, 0.95)';
+      toast.style.color = '#fff';
+      toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.26)';
+      toast.style.maxWidth = '320px';
+      toast.style.fontSize = '0.95rem';
+      document.body.appendChild(toast);
+
+      clearTimeout(this.notificationTimer);
+      this.notificationTimer = window.setTimeout(() => {
+        toast.remove();
+      }, 3200);
     }
 
     init() {
@@ -136,6 +163,7 @@
       const input = document.getElementById('cloud-link-input');
       const keyInput = document.getElementById('cloud-key-input');
       const button = document.getElementById('cloud-sync-use-btn');
+      const pushButton = document.getElementById('push-local-to-supabase-btn');
       if (!input || !keyInput) return;
 
       const storedUrl = localStorage.getItem(this.supabaseUrlKey);
@@ -157,24 +185,70 @@
         });
       }
 
+      if (pushButton) {
+        pushButton.addEventListener('click', () => {
+          const url = input.value.trim() || initialUrl;
+          const key = keyInput.value.trim() || initialKey;
+          if (url && key) {
+            this.showNotification('Starting local memory push…');
+            this.connectSupabase(url, key);
+          } else {
+            this.disconnectSupabase();
+            this.showNotification('Supabase credentials are missing.', true);
+          }
+        });
+      }
+
       if (initialUrl && initialKey) {
         this.connectSupabase(initialUrl, initialKey);
       }
     }
 
     connectSupabase(url, key) {
-      if (!url || !key || !window.supabase) {
+      const normalizedUrl = (url || '').trim();
+      const normalizedKey = (key || '').trim();
+
+      if (!normalizedUrl || !normalizedKey || !window.supabase) {
         this.renderCloudStatus('Supabase SDK not ready');
         return false;
       }
 
-      this.supabaseUrl = url;
-      this.supabaseKey = key;
-      this.supabaseClient = window.supabase.createClient(url, key);
-      localStorage.setItem(this.supabaseUrlKey, url);
-      localStorage.setItem(this.supabaseKeyKey, key);
+      if (this.supabaseClient && this.supabaseUrl === normalizedUrl && this.supabaseKey === normalizedKey) {
+        this.renderCloudStatus('Supabase connected');
+        return true;
+      }
+
+      this.supabaseUrl = normalizedUrl;
+      this.supabaseKey = normalizedKey;
+
+      if (!window.__ourUniverseSupabaseClient || window.__ourUniverseSupabaseClient.__ourUniverseUrl !== normalizedUrl || window.__ourUniverseSupabaseClient.__ourUniverseKey !== normalizedKey) {
+        window.__ourUniverseSupabaseClient = window.supabase.createClient(normalizedUrl, normalizedKey);
+        window.__ourUniverseSupabaseClient.__ourUniverseUrl = normalizedUrl;
+        window.__ourUniverseSupabaseClient.__ourUniverseKey = normalizedKey;
+      }
+
+      this.supabaseClient = window.__ourUniverseSupabaseClient;
+      this.lastSyncError = '';
+      localStorage.setItem(this.supabaseUrlKey, normalizedUrl);
+      localStorage.setItem(this.supabaseKeyKey, normalizedKey);
       this.renderCloudStatus('Connecting to Supabase…');
-      this.loadSupabaseEntries();
+      this.loadSupabaseEntries().then(() => {
+        const localEntries = this.getLocalEntries();
+        if (localEntries.length) {
+          this.entries = localEntries;
+          this.renderAll();
+          this.renderCloudStatus('Syncing local memories…');
+          this.syncToSupabase(localEntries).then(() => {
+            if (this.lastSyncError) {
+              this.showNotification(`Push failed: ${this.lastSyncError}`, true);
+            } else {
+              this.showNotification('Local memories pushed to Supabase successfully.');
+            }
+          });
+        } else {
+          this.renderCloudStatus('Supabase connected');
+        }
+      });
       return true;
     }
 
@@ -183,6 +257,7 @@
       localStorage.removeItem(this.supabaseKeyKey);
       this.supabaseUrl = '';
       this.supabaseKey = '';
+      window.__ourUniverseSupabaseClient = null;
       this.supabaseClient = null;
       this.renderCloudStatus('Local-only mode');
     }
@@ -195,6 +270,34 @@
     getConfiguredSupabaseKey() {
       const stored = localStorage.getItem(this.supabaseKeyKey);
       return stored || SUPABASE_ANON_KEY;
+    }
+
+    getLocalEntries() {
+      try {
+        const local = localStorage.getItem(this.storageKey);
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) {
+            return parsed.filter((entry) => !entry.isDefault);
+          }
+        }
+      } catch (error) {
+        console.warn('Could not read local gallery data for sync.', error);
+      }
+      return [];
+    }
+
+    async withTimeout(promise, ms = 8000) {
+      let timeoutId;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = window.setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms);
+      });
+
+      try {
+        return await Promise.race([promise, timeoutPromise]);
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
     }
 
     dataUrlToFile(dataUrl, filename) {
@@ -213,10 +316,10 @@
     async loadSupabaseEntries() {
       if (!this.supabaseClient) return null;
       try {
-        const { data, error } = await this.supabaseClient
+        const { data, error } = await this.withTimeout(this.supabaseClient
           .from(this.supabaseTable)
           .select('*')
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }));
 
         if (error) throw error;
         if (Array.isArray(data) && data.length) {
@@ -239,9 +342,10 @@
       }
     }
 
-    async syncToSupabase() {
+    async syncToSupabase(entriesOverride = null) {
       if (!this.supabaseClient) return;
-      const userEntries = this.entries.filter((entry) => !entry.isDefault);
+      const userEntries = (entriesOverride || this.entries).filter((entry) => !entry.isDefault);
+      let failed = [];
 
       for (const entry of userEntries) {
         if (!entry.id) continue;
@@ -252,9 +356,9 @@
             const fileName = `${entry.id}-${Date.now()}.jpg`;
             const file = this.dataUrlToFile(entry.image, fileName);
             const filePath = `${entry.id}-${Date.now()}`;
-            const { data: uploadData, error: uploadError } = await this.supabaseClient.storage
+            const { data: uploadData, error: uploadError } = await this.withTimeout(this.supabaseClient.storage
               .from(this.supabaseBucket)
-              .upload(filePath, file, { cacheControl: '3600', upsert: true });
+              .upload(filePath, file, { cacheControl: '3600', upsert: true }));
 
             if (uploadError) throw uploadError;
             const { data: publicData } = this.supabaseClient.storage
@@ -262,7 +366,8 @@
               .getPublicUrl(uploadData.path);
             imageUrl = publicData.publicUrl;
           } catch (error) {
-            console.warn('Could not upload image to Supabase.', error);
+            failed.push(error.message || 'Image upload failed');
+            console.error('Supabase image upload failed:', error);
           }
         }
 
@@ -275,13 +380,21 @@
           created_at: entry.created_at || new Date().toISOString()
         };
 
-        const { error } = await this.supabaseClient.from(this.supabaseTable).upsert(payload, { onConflict: 'id' });
+        const { error } = await this.withTimeout(this.supabaseClient.from(this.supabaseTable).upsert(payload, { onConflict: 'id' }));
         if (error) {
-          console.warn('Could not sync entry to Supabase.', error);
+          failed.push(error.message || 'Database sync failed');
+          console.error('Supabase database write failed:', error);
         }
       }
 
-      this.renderCloudStatus('Supabase connected');
+      if (failed.length) {
+        this.lastSyncError = failed[0];
+        this.renderCloudStatus(`Sync failed: ${this.lastSyncError}`);
+        this.showNotification(`Push failed: ${this.lastSyncError}`, true);
+      } else {
+        this.lastSyncError = '';
+        this.renderCloudStatus('Supabase connected');
+      }
     }
 
     async deleteSupabaseEntry(id) {
@@ -545,6 +658,7 @@
       if (message) {
         statusEl.textContent = message;
         statusEl.className = 'cloud-sync-status active';
+        statusEl.title = this.lastSyncError || '';
         return;
       }
       if (this.supabaseClient) {
