@@ -100,64 +100,9 @@
     init() {
       if (!this.containers.length) return;
       this.entries = this.loadEntries();
-      this.bindUploadForm();
       this.bindCloudSyncControls();
       this.renderAll();
       this.renderCloudStatus();
-    }
-
-    bindUploadForm() {
-      const form = document.getElementById('image-upload-form');
-      if (!form) return;
-
-      const imageInput = document.getElementById('image-input');
-      const fileName = document.getElementById('file-name');
-      const titleInput = document.getElementById('card-title-input');
-      const textInput = document.getElementById('card-text-input');
-
-      imageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        fileName.textContent = file ? file.name : 'No file selected';
-      });
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const file = imageInput.files[0];
-        const title = titleInput.value.trim();
-        const text = textInput.value.trim();
-
-        if (!file) {
-          alert('Please choose an image first.');
-          return;
-        }
-
-        if (!title || !text) {
-          alert('Add both a card title and card text.');
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const imageData = event.target.result;
-          this.addEntry({
-            id: `upload-${Date.now()}`,
-            title,
-            text,
-            image: imageData,
-            footer: `Added ${new Date().toLocaleDateString()}`,
-            isDefault: false
-          });
-
-          form.reset();
-          fileName.textContent = 'No file selected';
-          this.renderAll();
-          this.exportMemories();
-          if (window.synth && typeof window.synth.playChime === 'function') {
-            window.synth.playChime();
-          }
-        };
-        reader.readAsDataURL(file);
-      });
     }
 
     bindCloudSyncControls() {
